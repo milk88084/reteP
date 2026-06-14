@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" rx="40" fill="#FFC93C"/>
+  <!-- Left eye white -->
+  <ellipse cx="72" cy="105" rx="28" ry="33" fill="white"/>
+  <!-- Right eye white -->
+  <ellipse cx="128" cy="105" rx="28" ry="33" fill="white"/>
+  <!-- Left pupil (offset upper-right) -->
+  <ellipse cx="82" cy="96" rx="13" ry="15" fill="#1E1A14"/>
+  <!-- Right pupil (offset upper-right) -->
+  <ellipse cx="138" cy="96" rx="13" ry="15" fill="#1E1A14"/>
+  <!-- Left eye shine -->
+  <circle cx="87" cy="91" r="4" fill="white"/>
+  <!-- Right eye shine -->
+  <circle cx="143" cy="91" r="4" fill="white"/>
+  <!-- Nose -->
+  <path d="M96 128 Q100 133 104 128" stroke="#1E1A14" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>
