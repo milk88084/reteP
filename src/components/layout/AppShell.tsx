@@ -152,7 +152,7 @@ export const AppShell = () => {
           transition={{ type: 'tween', ease: [0.32, 0, 0.67, 0], duration: 0.26 }}
           className="absolute inset-0 overflow-y-auto overscroll-none"
         >
-          <div className="min-h-full max-w-lg mx-auto px-4 pb-32 pt-4">
+          <div className="min-h-full max-w-[430px] mx-auto px-4 pb-32 pt-4">
             {page === 'home'     && <HomePage />}
             {page === 'history'  && <HistoryPage />}
             {page === 'settings' && <SettingsPage />}
@@ -174,7 +174,7 @@ export const AppShell = () => {
       </AnimatePresence>
 
       {/* Bottom FAB bar — black hourglass bar + orange button with dashed ring */}
-      <div className="absolute bottom-0 left-0 right-0 z-50 flex flex-col items-center pointer-events-none">
+      <div className="absolute bottom-0 inset-x-0 mx-auto max-w-[430px] z-50 flex flex-col items-center pointer-events-none">
 
         {/* Sub-buttons — appear above the bar */}
         <AnimatePresence>
@@ -200,21 +200,11 @@ export const AppShell = () => {
             <span className="text-[11px] tracking-wide text-white/55">點按以新增一筆記錄</span>
           </div>
 
-          {/* Cream cradle — carves a concave circular notch into the panel's top edge */}
+          {/* Cradle — same black as the panel so it blends in (no white ring around the FAB) */}
           <div
-            className="absolute rounded-full bg-bg"
+            className="absolute rounded-full bg-[#0f0f0f]"
             style={{ width: 80, height: 80, left: '50%', top: -8, transform: 'translateX(-50%)' }}
           />
-
-          {/* Dashed ring inside the cradle */}
-          <svg
-            className="absolute pointer-events-none" width="74" height="74" viewBox="0 0 74 74"
-            style={{ left: '50%', top: -5, transform: 'translateX(-50%)' }} aria-hidden="true"
-          >
-            <circle cx="37" cy="37" r="36" fill="none"
-              stroke="rgba(110,110,110,0.6)" strokeWidth="1.4"
-              strokeDasharray="1.5 7" strokeLinecap="round" />
-          </svg>
 
           {/* FAB — nested in the cradle, half above the panel edge */}
           <div className="absolute z-10 flex justify-center" style={{ left: '50%', top: 0, transform: 'translateX(-50%)' }}>
@@ -223,7 +213,7 @@ export const AppShell = () => {
               transition={{ type: 'spring', stiffness: 400, damping: 28 }}
               onClick={() => setFabOpen((v) => !v)}
               aria-label="新增記錄"
-              className="pointer-events-auto w-16 h-16 rounded-full bg-accent flex items-center justify-center active:scale-95 transition-transform"
+              className="pointer-events-auto w-16 h-16 rounded-full bg-accent border-2 border-ink flex items-center justify-center active:scale-95 transition-transform"
               style={{ boxShadow: '0 10px 28px rgba(255,96,65,0.5)' }}
             >
               <PlusIcon />
