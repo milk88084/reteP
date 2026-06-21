@@ -1,6 +1,10 @@
 import { RouterProvider } from 'react-router-dom'
 import { router } from '@/router'
+import { SupabaseAuthSync } from '@/components/SupabaseAuthSync'
 
 export const App = () => (
-  <RouterProvider router={router} />
+  <>
+    <SupabaseAuthSync />
+    <RouterProvider router={router} />
+  </>
 )

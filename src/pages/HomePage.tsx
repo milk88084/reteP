@@ -12,6 +12,7 @@ import { getTodayStr } from '@/utils/dateUtils'
 import { formatNum } from '@/utils/nutritionCalc'
 import { FoodEntry, RecognizeApiResult } from '@/types'
 import { saveEntry } from '@/services/foodRecognitionApi'
+import { useAuth } from '@/hooks/useAuth'
 
 const todayStr = getTodayStr()
 
@@ -20,6 +21,7 @@ interface HomePageProps {
 }
 
 export const HomePage = ({ navIdx }: HomePageProps) => {
+  const { user } = useAuth()
   const { previewUrl, selectedFile, onFileChange, clearImage } = useCamera()
   const { recognize, isLoading, isError, error, result, reset } = useFoodRecognition()
   const { addEntry, getDailySummary } = useFoodLogStore()
@@ -52,14 +54,14 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
       logged_at: new Date().toISOString(),
     }
     addEntry(todayStr, entry)
-    await saveEntry(entry, todayStr).catch(() => {})
+    await saveEntry(entry, todayStr, user?.id ?? '').catch(() => {})
     clearImage()
     reset()
   }
 
   const handleManualConfirm = async (entry: FoodEntry) => {
     addEntry(todayStr, entry)
-    await saveEntry(entry, todayStr).catch(() => {})
+    await saveEntry(entry, todayStr, user?.id ?? '').catch(() => {})
     setShowManualEntry(false)
   }
 

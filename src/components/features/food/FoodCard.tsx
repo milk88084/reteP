@@ -53,7 +53,7 @@ export const FoodCard = ({ entry, onDelete }: FoodCardProps) => {
             <p className="text-xs text-ink-muted">{formatTime(entry.logged_at)}</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-base font-bold text-accent">{entry.calories}12313</span>
+            <span className="text-base font-bold text-accent">{entry.calories}</span>
             <span className="text-xs text-ink-muted">kcal</span>
             <button
               onClick={handleDelete}

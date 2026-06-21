@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/utils/cn'
 import { MetricNav } from '@/components/features/dashboard/MetricNav'
+import { DataSync } from '@/components/DataSync'
 import { HomePage } from '@/pages/HomePage'
 import { HistoryPage } from '@/pages/HistoryPage'
 import { SettingsPage } from '@/pages/SettingsPage'
@@ -77,6 +78,8 @@ export const AppShell = () => {
   }
 
   return (
+    <>
+    <DataSync />
     <div
       className="fixed inset-0 bg-bg overflow-hidden select-none"
       onTouchStart={onTouchStart}
@@ -111,5 +114,6 @@ export const AppShell = () => {
         )}
       </AnimatePresence>
     </div>
+    </>
   )
 }

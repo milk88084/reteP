@@ -19,6 +19,7 @@ import { getTodayStr, getDateStr, formatDateHeader } from '@/utils/dateUtils'
 import { formatNum } from '@/utils/nutritionCalc'
 import { cn } from '@/utils/cn'
 import { deleteEntry } from '@/services/foodRecognitionApi'
+import { useAuth } from '@/hooks/useAuth'
 
 const WEEKDAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
@@ -26,6 +27,7 @@ const WEEKDAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const mondayIndex = (date: Date) => (getDay(date) + 6) % 7
 
 export const HistoryPage = () => {
+  const { user } = useAuth()
   const [selectedDate, setSelectedDate] = useState(getTodayStr())
   const [activeMetric, setActiveMetric] = useState<'calories' | 'protein' | 'carbs' | 'fat'>('calories')
   const detailRef = useRef<HTMLElement>(null)
@@ -66,7 +68,7 @@ export const HistoryPage = () => {
 
   const handleDelete = async (id: string) => {
     removeEntry(selectedDate, id)
-    await deleteEntry(id, selectedDate).catch(() => {})
+    await deleteEntry(id, selectedDate, user?.id ?? '').catch(() => {})
   }
 
   return (
