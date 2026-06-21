@@ -41,10 +41,10 @@ export const AppShell = () => {
     setPage(to)
   }
 
-  /* idx 0 → settings, idx 4 → history, 1-3 → change metric */
+  /* idx 0 → history, idx 4 → settings, 1-3 → change metric */
   const handleNavSelect = (idx: number) => {
-    if (idx === 0) { goTo('settings'); return }
-    if (idx === 4) { goTo('history');  return }
+    if (idx === 0) { goTo('history');  return }
+    if (idx === 4) { goTo('settings'); return }
     setNavIdx(idx)
   }
 

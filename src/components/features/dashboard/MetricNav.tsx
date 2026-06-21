@@ -9,11 +9,11 @@ interface NavItem {
 }
 
 const ITEMS: NavItem[] = [
-  { kind: 'action',  id: 'settings', label: '設定',       color: '#9E9E9E' },
+  { kind: 'action',  id: 'history',  label: '歷史',       color: '#9E9E9E' },
   { kind: 'metric',  id: 'protein',  label: '蛋白質',     color: '#6B9EFF' },
   { kind: 'metric',  id: 'calories', label: '熱量',       color: '#FF6041' },
   { kind: 'metric',  id: 'carbs',    label: '碳水化合物',  color: '#FFC93C' },
-  { kind: 'action',  id: 'history',  label: '歷史',       color: '#9E9E9E' },
+  { kind: 'action',  id: 'settings', label: '設定',       color: '#9E9E9E' },
 ]
 
 const LEFT   = [12, 31, 50, 69, 88]
