@@ -1,7 +1,6 @@
 import { FoodEntry } from '@/types'
 import { FoodCard } from './FoodCard'
 import { FoodCardSkeleton } from '@/components/ui/Skeleton'
-import MascotEmpty from '@/assets/mascot/mascot-empty.svg'
 
 interface FoodListProps {
   entries: FoodEntry[]
@@ -22,8 +21,8 @@ export const FoodList = ({ entries, onDelete, onEdit, isLoading }: FoodListProps
   if (entries.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10">
-        <div className="w-40 h-40 rounded-3xl overflow-hidden mb-5">
-          <img src={MascotEmpty} alt="空狀態" className="w-full h-full object-cover" />
+        <div className="w-20 h-20 rounded-3xl bg-surface flex items-center justify-center mb-5">
+          <span className="text-4xl select-none">🍽️</span>
         </div>
         <p className="text-ink-muted text-sm text-center leading-relaxed">
           還沒有紀錄<br />拍張照片開始吧

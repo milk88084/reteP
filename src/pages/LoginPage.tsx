@@ -6,7 +6,6 @@ import { useSettingsStore } from '@/store/settingsStore'
 import { calcTDEE } from '@/utils/nutritionCalc'
 import { GenderType, GoalType } from '@/types'
 import { cn } from '@/utils/cn'
-import MascotLogo from '@/assets/mascot/mascot-logo.svg'
 
 type Tab  = 'login' | 'register'
 type Step = 1 | 2 | 3   // 3 = email verification (register only)
@@ -154,7 +153,7 @@ export const LoginPage = () => {
   return (
     <div className="min-h-screen bg-brand flex flex-col items-center justify-start p-6 pt-14 overflow-y-auto">
       <div className="mb-7 flex flex-col items-center">
-        <img src={MascotLogo} alt="Logo" className="w-24 h-24 rounded-3xl shadow-lg mb-4" />
+        <img src="/icons/icon-180.png" alt="Logo" className="w-24 h-24 rounded-3xl shadow-lg mb-4" />
         <h1 className="text-3xl font-bold text-ink tracking-tight">飲食記錄</h1>
         <p className="text-ink/60 text-sm mt-1 font-medium">拍一張，記下來</p>
       </div>

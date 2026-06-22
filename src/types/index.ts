@@ -13,6 +13,7 @@ export interface FoodEntry extends NutritionInfo {
   serving_size: string
   confidence?: number
   image_data_url?: string
+  emoji?: string
   logged_at: string
 }
 

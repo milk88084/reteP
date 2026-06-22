@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RecognizeApiResult } from '@/types'
 import { Button } from '@/components/ui/Button'
-import MascotLoading from '@/assets/mascot/mascot-loading.svg'
 
 interface ImagePreviewProps {
   previewUrl: string
@@ -83,13 +82,7 @@ export const ImagePreview = ({
             <img src={previewUrl} alt="食物照片" className="w-full h-full object-cover" />
             {isLoading && (
               <div className="absolute inset-0 bg-brand/90 flex flex-col items-center justify-center">
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ repeat: Infinity, duration: 1.2 }}
-                  className="w-32 h-32"
-                >
-                  <img src={MascotLoading} alt="辨識中" className="w-full h-full object-cover rounded-3xl" />
-                </motion.div>
+                <div className="w-12 h-12 border-4 border-ink/20 border-t-ink rounded-full animate-spin" />
                 <p className="mt-4 text-ink font-semibold text-sm">辨識中...</p>
               </div>
             )}

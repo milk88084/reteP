@@ -52,7 +52,7 @@ export const AppShell = () => {
   }
 
   const checkSwipe = (dx: number, dy: number) => {
-    if (Math.abs(dx) < Math.abs(dy) * 1.2 || Math.abs(dx) < 65) return
+    if (Math.abs(dx) < Math.abs(dy) * 2.5 || Math.abs(dx) < 80) return
     if (dx > 0) { // swipe right → history
       if (page === 'settings') goTo('home')
       else if (page === 'home') goTo('history')
@@ -100,9 +100,15 @@ export const AppShell = () => {
           animate="center"
           exit="exit"
           transition={{ type: 'tween', ease: [0.32, 0, 0.67, 0], duration: 0.26 }}
-          className="absolute inset-0 overflow-y-auto overscroll-none scrollbar-hide"
+          className={cn(
+            'absolute inset-0 scrollbar-hide',
+            page === 'home' ? 'overflow-hidden' : 'overflow-y-auto overscroll-none',
+          )}
         >
-          <div className={cn('min-h-full max-w-[430px] mx-auto px-4 pt-4', page === 'home' ? 'pb-44' : 'pb-8')}>
+          <div className={cn(
+            'max-w-[430px] mx-auto px-4 pt-4',
+            page === 'home' ? 'h-full' : 'min-h-full pb-8',
+          )}>
             {page === 'home'     && <HomePage navIdx={navIdx} />}
             {page === 'history'  && <HistoryPage />}
             {page === 'settings' && <SettingsPage />}

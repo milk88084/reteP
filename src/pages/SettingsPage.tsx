@@ -56,7 +56,7 @@ export const SettingsPage = () => {
   }
 
   const handleSave = () => {
-    updateSettings(draft)
+    updateSettings(draft, user?.id)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
   }

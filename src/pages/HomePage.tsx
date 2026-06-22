@@ -1,42 +1,47 @@
-import { useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ParticleRing } from '@/components/features/dashboard/ParticleRing'
-import { ImagePreview } from '@/components/features/camera/ImagePreview'
-import { ManualEntryModal } from '@/components/features/food/ManualEntryModal'
-import { useCamera } from '@/hooks/useCamera'
-import { useFoodRecognition } from '@/hooks/useFoodRecognition'
-import { useFoodLogStore } from '@/store/foodLogStore'
-import { useSettingsStore } from '@/store/settingsStore'
-import { useUIStore } from '@/store/uiStore'
-import { getTodayStr } from '@/utils/dateUtils'
-import { formatNum } from '@/utils/nutritionCalc'
-import { FoodEntry, RecognizeApiResult } from '@/types'
-import { saveEntry } from '@/services/foodRecognitionApi'
-import { useAuth } from '@/hooks/useAuth'
+import { useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ParticleRing } from "@/components/features/dashboard/ParticleRing";
+import { ImagePreview } from "@/components/features/camera/ImagePreview";
+import { ManualEntryModal } from "@/components/features/food/ManualEntryModal";
+import { useCamera } from "@/hooks/useCamera";
+import { useFoodRecognition } from "@/hooks/useFoodRecognition";
+import { useFoodLogStore } from "@/store/foodLogStore";
+import { useSettingsStore } from "@/store/settingsStore";
+import { useUIStore } from "@/store/uiStore";
+import { getTodayStr } from "@/utils/dateUtils";
+import { formatNum } from "@/utils/nutritionCalc";
+import { FoodEntry, RecognizeApiResult } from "@/types";
+import { saveEntry } from "@/services/foodRecognitionApi";
+import { useAuth } from "@/hooks/useAuth";
 
-const todayStr = getTodayStr()
+const todayStr = getTodayStr();
 
 interface HomePageProps {
-  navIdx: number
+  navIdx: number;
 }
 
 export const HomePage = ({ navIdx }: HomePageProps) => {
-  const { user } = useAuth()
-  const { previewUrl, selectedFile, onFileChange, clearImage } = useCamera()
-  const { recognize, isLoading, isError, error, result, reset } = useFoodRecognition()
-  const { addEntry, getDailySummary } = useFoodLogStore()
-  const { settings } = useSettingsStore()
-  const { showManualEntry, setShowManualEntry, pendingCamera, clearCamera } = useUIStore()
+  const { user } = useAuth();
+  const { previewUrl, selectedFile, onFileChange, clearImage } = useCamera();
+  const { recognize, isLoading, isError, error, result, reset } =
+    useFoodRecognition();
+  const { addEntry, getDailySummary } = useFoodLogStore();
+  const { settings } = useSettingsStore();
+  const { showManualEntry, setShowManualEntry, pendingCamera, clearCamera } =
+    useUIStore();
 
-  const cameraInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (pendingCamera) { clearCamera(); cameraInputRef.current?.click() }
-  }, [pendingCamera])
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (selectedFile && previewUrl) recognize(selectedFile)
-  }, [selectedFile, previewUrl])
+    if (pendingCamera) {
+      clearCamera();
+      cameraInputRef.current?.click();
+    }
+  }, [pendingCamera]);
+
+  useEffect(() => {
+    if (selectedFile && previewUrl) recognize(selectedFile);
+  }, [selectedFile, previewUrl]);
 
   const handleConfirm = async (edited: RecognizeApiResult) => {
     const entry: FoodEntry = {
@@ -52,29 +57,51 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
       confidence: edited.confidence,
       image_data_url: previewUrl ?? undefined,
       logged_at: new Date().toISOString(),
-    }
-    addEntry(todayStr, entry)
-    await saveEntry(entry, todayStr, user?.id ?? '').catch((e) => console.error('[saveEntry]', e))
-    clearImage()
-    reset()
-  }
+    };
+    addEntry(todayStr, entry);
+    await saveEntry(entry, todayStr, user?.id ?? "").catch((e) =>
+      console.error("[saveEntry]", e),
+    );
+    clearImage();
+    reset();
+  };
 
-  const handleManualConfirm = async (entry: FoodEntry) => {
-    addEntry(todayStr, entry)
-    await saveEntry(entry, todayStr, user?.id ?? '').catch((e) => console.error('[saveEntry]', e))
-    setShowManualEntry(false)
-  }
+  const handleManualConfirm = async (entry: FoodEntry, date: string) => {
+    addEntry(date, entry);
+    await saveEntry(entry, date, user?.id ?? "").catch((e) =>
+      console.error("[saveEntry]", e),
+    );
+    setShowManualEntry(false);
+  };
 
-  const summary = getDailySummary(todayStr)
+  const summary = getDailySummary(todayStr);
 
   const METRICS = {
-    1: { current: summary.total_protein,  goal: settings.protein_goal, color: '#6B9EFF', label: '蛋白質',    unit: 'g' },
-    2: { current: summary.total_calories, goal: settings.calorie_goal, color: '#FF6041', label: '熱量',      unit: 'kcal' },
-    3: { current: summary.total_carbs,    goal: settings.carbs_goal,   color: '#FFC93C', label: '碳水化合物', unit: 'g' },
-  } as const
-  const metric  = METRICS[navIdx as 1 | 2 | 3]
-  const progress = Math.min(metric.current / metric.goal, 1)
-  const percent  = Math.round((metric.current / metric.goal) * 100)
+    1: {
+      current: summary.total_protein,
+      goal: settings.protein_goal,
+      color: "#6B9EFF",
+      label: "蛋白質",
+      unit: "g",
+    },
+    2: {
+      current: summary.total_calories,
+      goal: settings.calorie_goal,
+      color: "#FF6041",
+      label: "熱量",
+      unit: "kcal",
+    },
+    3: {
+      current: summary.total_carbs,
+      goal: settings.carbs_goal,
+      color: "#FFC93C",
+      label: "碳水化合物",
+      unit: "g",
+    },
+  } as const;
+  const metric = METRICS[navIdx as 1 | 2 | 3];
+  const progress = Math.min(metric.current / metric.goal, 1);
+  const percent = Math.round((metric.current / metric.goal) * 100);
 
   return (
     <>
@@ -89,23 +116,25 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
       />
 
       {/* Full-height stage: title on top, particle ring below */}
-      <div className="relative" style={{ height: 'calc(100dvh - 9rem)' }}>
-
+      <div className="relative" style={{ height: "calc(100dvh - 9rem)" }}>
         {/* Big bold black title */}
         <div
-          className="absolute -left-4 -right-4 top-0 z-0 pointer-events-none select-none"
-          style={{ paddingTop: 'clamp(6px, 2vw, 14px)' }}
+          className="absolute -left-4 -right-4 top-0 z-0 pointer-events-none select-none text-center"
+          style={{ paddingTop: "clamp(6px, 2vw, 14px)" }}
         >
-          {['CALORIE', 'RECORD'].map((word) => (
-            <svg key={word} viewBox="0 0 1000 180" width="100%" className="block">
-              <text
-                x="500" y="148" textAnchor="middle"
-                textLength="980" lengthAdjust="spacingAndGlyphs"
-                fontFamily="inherit" fontWeight={900} fontSize={176} fill="#1E1A14"
-              >
-                {word}
-              </text>
-            </svg>
+          {["CALORIE", "RECORD"].map((word) => (
+            <div
+              key={word}
+              className="leading-[0.88]"
+              style={{
+                fontFamily: "'Bitcount Prop Single', cursive",
+                fontWeight: 300,
+                fontSize: "clamp(64px, 20vw, 90px)",
+                color: "#1E1A14",
+              }}
+            >
+              {word}
+            </div>
           ))}
         </div>
 
@@ -121,9 +150,12 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
               transition={{ duration: 0.22 }}
               className="mt-4 text-center"
             >
-              <div className="text-4xl font-bold tracking-tight text-ink">{percent}%</div>
+              <div className="text-4xl font-bold tracking-tight text-ink">
+                {percent}%
+              </div>
               <div className="mt-1 text-sm text-ink-muted">
-                {metric.label}　·　{formatNum(metric.current)} / {metric.goal}{metric.unit}
+                {metric.label}　·　{formatNum(metric.current)} / {metric.goal}
+                {metric.unit}
               </div>
             </motion.div>
           </AnimatePresence>
@@ -138,7 +170,10 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
           error={error}
           result={result}
           onConfirm={handleConfirm}
-          onRetake={() => { clearImage(); reset() }}
+          onRetake={() => {
+            clearImage();
+            reset();
+          }}
         />
       )}
 
@@ -149,5 +184,5 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
         />
       )}
     </>
-  )
-}
+  );
+};
