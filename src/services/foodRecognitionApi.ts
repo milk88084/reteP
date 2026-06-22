@@ -5,19 +5,47 @@ import { sumEntries } from '@/utils/nutritionCalc'
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
-// Food recognition still calls an external AI service (n8n webhook or similar).
-// Set VITE_AI_WEBHOOK_URL in .env.local to enable real recognition.
+interface N8nFoodResponse {
+  FoodName: string
+  Calories: number
+  Protein: number
+  Fat: number
+  Carbs: number
+  Details: string
+}
+
 export const recognizeFood = async (file: File): Promise<RecognizeResponse> => {
   if (USE_MOCK) return mockRecognizeFood(file)
 
   const webhookUrl = import.meta.env.VITE_AI_WEBHOOK_URL as string | undefined
-  if (!webhookUrl) return mockRecognizeFood(file) // graceful fallback while webhook not set
+  if (!webhookUrl) return mockRecognizeFood(file)
 
   const form = new FormData()
   form.append('image', file)
   const res = await fetch(webhookUrl, { method: 'POST', body: form })
   if (!res.ok) throw new Error(`AI webhook error: ${res.status}`)
-  return res.json() as Promise<RecognizeResponse>
+
+  const raw: N8nFoodResponse = await res.json()
+
+  if (raw.FoodName === '解析失敗') {
+    return { success: false, error: raw.Details || '食物辨識失敗' }
+  }
+
+  return {
+    success: true,
+    data: {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      food_name: raw.FoodName,
+      calories: raw.Calories,
+      protein: raw.Protein,
+      fat: raw.Fat,
+      carbs: raw.Carbs,
+      fiber: 0,
+      serving_size: '1份',
+      confidence: 1.0,
+      recognized_at: new Date().toISOString(),
+    },
+  }
 }
 
 export const getDailyLog = async (date: string, userId: string): Promise<DailyLog> => {

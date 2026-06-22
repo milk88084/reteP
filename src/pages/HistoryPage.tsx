@@ -81,7 +81,9 @@ export const HistoryPage = () => {
 
   const isCurrentMonth = isSameMonth(viewMonth, new Date());
   const prevMonth = () => setViewMonth((m) => subMonths(m, 1));
-  const nextMonth = () => { if (!isCurrentMonth) setViewMonth((m) => addMonths(m, 1)); };
+  const nextMonth = () => {
+    if (!isCurrentMonth) setViewMonth((m) => addMonths(m, 1));
+  };
 
   /* Days of the displayed month */
   const monthDays = useMemo(() => {
@@ -160,19 +162,16 @@ export const HistoryPage = () => {
         <section className="flex min-h-[calc(100vh-9rem)] flex-col">
           {/* Top: date hero */}
           <div className="flex-1 flex flex-col justify-center">
-            <div className="text-[6rem] leading-none font-bold tracking-tight text-ink">
+            <div className="text-[8rem] leading-none font-bold tracking-tight text-[#FF8C69]">
               {format(selected, "d")}
             </div>
-            <div className="mt-4 flex items-end justify-between">
+            <div className="mt-1 flex items-end justify-between">
               <div>
-                <div className="text-2xl font-bold uppercase tracking-wide text-ink">
+                <div className="text-6xl font-bold uppercase tracking-wide text-ink">
                   {format(selected, "MMMM")}
                 </div>
-                <div className="text-2xl font-light text-ink-muted">
-                  {format(selected, "yyyy")}
-                </div>
               </div>
-              <div className="text-2xl font-medium text-ink-muted">
+              <div className="text-6xl font-medium text-ink-muted">
                 {format(selected, "EEE")}
               </div>
             </div>
@@ -236,10 +235,13 @@ export const HistoryPage = () => {
                       clickable
                         ? "active:scale-90 cursor-pointer"
                         : "cursor-default",
-                      today   ? "bg-accent"
-                      : future  ? "bg-surface"
-                      : recorded ? "bg-ink-muted"
-                      : "bg-border",
+                      today
+                        ? "bg-accent"
+                        : future
+                          ? "bg-surface"
+                          : recorded
+                            ? "bg-ink-muted"
+                            : "bg-border",
                       isSelected &&
                         !today &&
                         clickable &&

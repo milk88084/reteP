@@ -49,5 +49,14 @@ export default defineConfig({
   ],
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') }
-  }
+  },
+  server: {
+    proxy: {
+      '/api/analyze-food': {
+        target: 'https://n8n.iii-ei-stack.com',
+        changeOrigin: true,
+        rewrite: () => '/webhook-test/analyze-food',
+      },
+    },
+  },
 })

@@ -139,11 +139,10 @@ export const ImagePreview = ({
                 </div>
 
                 {/* Macros grid */}
-                <div className="grid grid-cols-4 gap-2 bg-surface rounded-xl p-3">
+                <div className="grid grid-cols-3 gap-2 bg-surface rounded-xl p-3">
                   <EditableNum label="蛋白質" unit="g" value={draft.protein} onChange={setField('protein')} />
                   <EditableNum label="碳水" unit="g" value={draft.carbs} onChange={setField('carbs')} />
                   <EditableNum label="脂肪" unit="g" value={draft.fat} onChange={setField('fat')} />
-                  <EditableNum label="纖維" unit="g" value={draft.fiber} onChange={setField('fiber')} />
                 </div>
               </motion.div>
             )}

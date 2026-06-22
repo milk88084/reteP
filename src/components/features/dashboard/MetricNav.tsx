@@ -19,13 +19,6 @@ const ITEMS: NavItem[] = [
 const LEFT   = [12, 31, 50, 69, 88]
 const BOTTOM = [50, 43, 40, 43, 50]
 
-const EyeIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#141414" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" />
-    <circle cx="12" cy="12" r="3" fill="#141414" stroke="none" />
-  </svg>
-)
-
 const PlusIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e8e4de" strokeWidth="2.4" strokeLinecap="round">
     <line x1="12" y1="5" x2="12" y2="19" />
@@ -122,13 +115,14 @@ export const MetricNav = ({ activeIdx, onSelect }: MetricNavProps) => {
               ) : isActive ? (
                 <motion.div
                   layoutId="nav-active"
-                  className="absolute flex items-center justify-center rounded-full bg-white/20"
-                  style={{ width: 56, height: 56 }}
+                  className="absolute flex items-center justify-center rounded-full"
+                  style={{ width: 44, height: 44, backgroundColor: `${item.color}30` }}
                   transition={{ type: 'spring', stiffness: 320, damping: 26 }}
                 >
-                  <div className="flex items-center justify-center rounded-full bg-white" style={{ width: 38, height: 38 }}>
-                    <EyeIcon />
-                  </div>
+                  <span
+                    className="rounded-full"
+                    style={{ width: 20, height: 20, backgroundColor: item.color }}
+                  />
                 </motion.div>
               ) : (
                 <span

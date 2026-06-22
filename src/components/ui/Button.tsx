@@ -16,7 +16,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       secondary: 'bg-surface text-ink hover:bg-border disabled:opacity-50',
       ghost: 'bg-transparent text-ink hover:bg-surface disabled:opacity-40',
       brand: 'bg-brand text-ink hover:bg-brand-dark disabled:opacity-50',
-      danger: 'bg-transparent text-red-500 hover:bg-red-50 disabled:opacity-40',
+      danger: 'bg-red-500/10 text-red-500 hover:bg-red-500/20 disabled:opacity-40',
     }
     const sizes = {
       sm: 'px-4 py-1.5 text-sm',
