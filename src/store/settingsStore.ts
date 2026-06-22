@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { UserSettings } from '@/types'
 import { DEFAULT_SETTINGS } from '@/constants'
-import { getAuthedSupabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 interface SettingsState {
   settings: UserSettings
@@ -23,7 +23,7 @@ export const useSettingsStore = create<SettingsState>()(
         // Write through to Supabase if userId provided
         if (userId) {
           const merged = { ...get().settings, ...partial }
-          getAuthedSupabase()
+          supabase
             .from('user_settings')
             .upsert({ user_id: userId, settings: merged }, { onConflict: 'user_id' })
         }

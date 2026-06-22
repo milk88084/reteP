@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*.svg'],
+      includeAssets: ['icons/*.png', 'favicon.ico'],
       manifest: {
         name: '每日飲食記錄',
         short_name: '飲食記錄',
@@ -20,8 +20,8 @@ export default defineConfig({
         scope: '/',
         start_url: '/',
         icons: [
-          { src: 'icons/icon-192.svg', sizes: '192x192', type: 'image/svg+xml' },
-          { src: 'icons/icon-512.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+          { src: 'icons/icon-180.png', sizes: '180x180', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ]
       },
       workbox: {

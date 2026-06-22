@@ -7,6 +7,7 @@ interface FoodLogState {
   logs: Record<string, FoodEntry[]>
   addEntry:    (date: string, entry: FoodEntry) => void
   removeEntry: (date: string, entryId: string) => void
+  updateEntry: (date: string, entry: FoodEntry) => void
   setLogs:     (logs: Record<string, FoodEntry[]>) => void
   getEntriesForDate: (date: string) => FoodEntry[]
   getDailySummary:   (date: string) => DailySummary
@@ -27,6 +28,14 @@ export const useFoodLogStore = create<FoodLogState>()(
           logs: {
             ...state.logs,
             [date]: (state.logs[date] ?? []).filter((e) => e.id !== entryId),
+          },
+        })),
+
+      updateEntry: (date, entry) =>
+        set((state) => ({
+          logs: {
+            ...state.logs,
+            [date]: (state.logs[date] ?? []).map((e) => e.id === entry.id ? entry : e),
           },
         })),
 

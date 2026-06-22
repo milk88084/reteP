@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useFoodLogStore } from '@/store/foodLogStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { getAuthedSupabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { FoodEntry } from '@/types'
 
 /**
@@ -17,14 +17,12 @@ export const DataSync = () => {
   useEffect(() => {
     if (!isSignedIn || !user) return
 
-    const db = getAuthedSupabase()
-
     // Load last 60 days of food logs
     const since = new Date()
     since.setDate(since.getDate() - 60)
     const sinceStr = since.toISOString().slice(0, 10)
 
-    db.from('food_logs')
+    supabase.from('food_logs')
       .select('date, entry')
       .eq('user_id', user.id)
       .gte('date', sinceStr)
@@ -38,7 +36,7 @@ export const DataSync = () => {
       })
 
     // Load user settings
-    db.from('user_settings')
+    supabase.from('user_settings')
       .select('settings')
       .eq('user_id', user.id)
       .maybeSingle()

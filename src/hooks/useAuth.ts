@@ -18,6 +18,6 @@ export const useAuth = () => {
     isLoaded,
     isSignedIn: !!isSignedIn,
     user: authUser,
-    signOut: () => signOut({ redirectUrl: '/login' }),
+    signOut: () => signOut(),
   }
 }

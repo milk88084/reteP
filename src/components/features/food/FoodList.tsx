@@ -6,10 +6,11 @@ import MascotEmpty from '@/assets/mascot/mascot-empty.svg'
 interface FoodListProps {
   entries: FoodEntry[]
   onDelete: (id: string) => void
+  onEdit: (entry: FoodEntry) => void
   isLoading?: boolean
 }
 
-export const FoodList = ({ entries, onDelete, isLoading }: FoodListProps) => {
+export const FoodList = ({ entries, onDelete, onEdit, isLoading }: FoodListProps) => {
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -34,7 +35,7 @@ export const FoodList = ({ entries, onDelete, isLoading }: FoodListProps) => {
   return (
     <div className="space-y-2">
       {entries.map((entry) => (
-        <FoodCard key={entry.id} entry={entry} onDelete={onDelete} />
+        <FoodCard key={entry.id} entry={entry} onDelete={onDelete} onEdit={onEdit} />
       ))}
     </div>
   )

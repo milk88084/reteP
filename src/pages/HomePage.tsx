@@ -54,14 +54,14 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
       logged_at: new Date().toISOString(),
     }
     addEntry(todayStr, entry)
-    await saveEntry(entry, todayStr, user?.id ?? '').catch(() => {})
+    await saveEntry(entry, todayStr, user?.id ?? '').catch((e) => console.error('[saveEntry]', e))
     clearImage()
     reset()
   }
 
   const handleManualConfirm = async (entry: FoodEntry) => {
     addEntry(todayStr, entry)
-    await saveEntry(entry, todayStr, user?.id ?? '').catch(() => {})
+    await saveEntry(entry, todayStr, user?.id ?? '').catch((e) => console.error('[saveEntry]', e))
     setShowManualEntry(false)
   }
 

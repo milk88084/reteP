@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
+import { useUIStore } from '@/store/uiStore'
 import { cn } from '@/utils/cn'
 import { MetricNav } from '@/components/features/dashboard/MetricNav'
 import { DataSync } from '@/components/DataSync'
@@ -20,6 +21,8 @@ const slideVariants = {
 
 export const AppShell = () => {
   const { isLoaded, isSignedIn } = useAuth()
+
+  const { setShowManualEntry, triggerCamera } = useUIStore()
 
   const [page,      setPage]      = useState<PageId>('home')
   const [direction, setDirection] = useState(0)
@@ -41,10 +44,10 @@ export const AppShell = () => {
     setPage(to)
   }
 
-  /* idx 0 → history, idx 4 → settings, 1-3 → change metric */
+  /* idx 0 → manual entry, idx 4 → camera, 1-3 → change metric */
   const handleNavSelect = (idx: number) => {
-    if (idx === 0) { goTo('history');  return }
-    if (idx === 4) { goTo('settings'); return }
+    if (idx === 0) { setShowManualEntry(true); return }
+    if (idx === 4) { triggerCamera();          return }
     setNavIdx(idx)
   }
 

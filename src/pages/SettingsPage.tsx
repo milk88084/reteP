@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useFoodLogStore } from '@/store/foodLogStore'
 import { Button } from '@/components/ui/Button'
 import { calcTDEE } from '@/utils/nutritionCalc'
 import { UserSettings, GenderType, GoalType } from '@/types'
@@ -39,6 +40,7 @@ export const SettingsPage = () => {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
   const { settings, updateSettings } = useSettingsStore()
+  const clearLogs = useFoodLogStore((s) => s.setLogs)
   const [draft, setDraft] = useState<UserSettings>({ ...settings })
   const [saved, setSaved] = useState(false)
   const [recalculated, setRecalculated] = useState(false)
@@ -178,7 +180,11 @@ export const SettingsPage = () => {
         >
           預覽登入 / 註冊頁面 →
         </button>
-        <Button variant="danger" onClick={signOut} className="w-full">
+        <Button
+          variant="danger"
+          onClick={() => { clearLogs({}); signOut() }}
+          className="w-full"
+        >
           登出
         </Button>
       </div>

@@ -1,6 +1,6 @@
 import { RecognizeResponse, DailyLog, FoodEntry } from '@/types'
 import { mockRecognizeFood, mockGetLogs, mockDeleteEntry, mockSaveEntry } from './mockApi'
-import { getAuthedSupabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { sumEntries } from '@/utils/nutritionCalc'
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
@@ -23,7 +23,7 @@ export const recognizeFood = async (file: File): Promise<RecognizeResponse> => {
 export const getDailyLog = async (date: string, userId: string): Promise<DailyLog> => {
   if (USE_MOCK) return mockGetLogs(date)
 
-  const { data, error } = await getAuthedSupabase()
+  const { data, error } = await supabase
     .from('food_logs')
     .select('entry')
     .eq('user_id', userId)
@@ -37,9 +37,22 @@ export const getDailyLog = async (date: string, userId: string): Promise<DailyLo
 export const saveEntry = async (entry: FoodEntry, date: string, userId: string): Promise<void> => {
   if (USE_MOCK) return mockSaveEntry(entry, date)
 
-  const { error } = await getAuthedSupabase()
+  const { error } = await supabase
     .from('food_logs')
     .insert({ user_id: userId, date, entry })
+
+  if (error) throw error
+}
+
+export const updateEntry = async (entry: FoodEntry, date: string, userId: string): Promise<void> => {
+  if (USE_MOCK) return
+
+  const { error } = await supabase
+    .from('food_logs')
+    .update({ entry })
+    .eq('user_id', userId)
+    .eq('date', date)
+    .eq('entry->>id', entry.id)
 
   if (error) throw error
 }
@@ -47,7 +60,7 @@ export const saveEntry = async (entry: FoodEntry, date: string, userId: string):
 export const deleteEntry = async (entryId: string, date: string, userId: string): Promise<void> => {
   if (USE_MOCK) return mockDeleteEntry(entryId, date)
 
-  const { error } = await getAuthedSupabase()
+  const { error } = await supabase
     .from('food_logs')
     .delete()
     .eq('user_id', userId)

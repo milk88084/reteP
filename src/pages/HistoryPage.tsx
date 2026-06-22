@@ -12,13 +12,15 @@ import {
 } from 'date-fns'
 import { zhTW } from 'date-fns/locale'
 import { FoodList } from '@/components/features/food/FoodList'
+import { FoodEntry } from '@/types'
 import { ParticleRing } from '@/components/features/dashboard/ParticleRing'
 import { useFoodLogStore } from '@/store/foodLogStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { getTodayStr, getDateStr, formatDateHeader } from '@/utils/dateUtils'
 import { formatNum } from '@/utils/nutritionCalc'
 import { cn } from '@/utils/cn'
-import { deleteEntry } from '@/services/foodRecognitionApi'
+import { deleteEntry, updateEntry } from '@/services/foodRecognitionApi'
+import { ManualEntryModal } from '@/components/features/food/ManualEntryModal'
 import { useAuth } from '@/hooks/useAuth'
 
 const WEEKDAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
@@ -31,7 +33,8 @@ export const HistoryPage = () => {
   const [selectedDate, setSelectedDate] = useState(getTodayStr())
   const [activeMetric, setActiveMetric] = useState<'calories' | 'protein' | 'carbs' | 'fat'>('calories')
   const detailRef = useRef<HTMLElement>(null)
-  const { getEntriesForDate, getDailySummary, removeEntry } = useFoodLogStore()
+  const { getEntriesForDate, getDailySummary, removeEntry, updateEntry: updateEntryStore } = useFoodLogStore()
+  const [editingEntry, setEditingEntry] = useState<FoodEntry | null>(null)
   const logs = useFoodLogStore((s) => s.logs)
   const { settings } = useSettingsStore()
 
@@ -68,10 +71,17 @@ export const HistoryPage = () => {
 
   const handleDelete = async (id: string) => {
     removeEntry(selectedDate, id)
-    await deleteEntry(id, selectedDate, user?.id ?? '').catch(() => {})
+    await deleteEntry(id, selectedDate, user?.id ?? '').catch((e) => console.error('[deleteEntry]', e))
+  }
+
+  const handleEdit = async (updated: FoodEntry) => {
+    updateEntryStore(selectedDate, updated)
+    setEditingEntry(null)
+    await updateEntry(updated, selectedDate, user?.id ?? '').catch((e) => console.error('[updateEntry]', e))
   }
 
   return (
+    <>
     <div className="space-y-6">
       {/* ── Calendar section — fills the viewport ── */}
       <section className="flex min-h-[calc(100vh-9rem)] flex-col">
@@ -238,9 +248,18 @@ export const HistoryPage = () => {
         {/* Per-meal records */}
         <div className="space-y-3">
           <h2 className="text-base font-bold text-ink">每餐紀錄</h2>
-          <FoodList entries={entries} onDelete={handleDelete} />
+          <FoodList entries={entries} onDelete={handleDelete} onEdit={setEditingEntry} />
         </div>
       </section>
     </div>
+
+    {editingEntry && (
+      <ManualEntryModal
+        initialEntry={editingEntry}
+        onConfirm={handleEdit}
+        onClose={() => setEditingEntry(null)}
+      />
+    )}
+    </>
   )
 }

@@ -6,6 +6,7 @@ import { formatTime } from '@/utils/dateUtils'
 interface FoodCardProps {
   entry: FoodEntry
   onDelete: (id: string) => void
+  onEdit: (entry: FoodEntry) => void
 }
 
 const TrashIcon = () => (
@@ -17,7 +18,14 @@ const TrashIcon = () => (
   </svg>
 )
 
-export const FoodCard = ({ entry, onDelete }: FoodCardProps) => {
+const PencilIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+  </svg>
+)
+
+export const FoodCard = ({ entry, onDelete, onEdit }: FoodCardProps) => {
   const [removing, setRemoving] = useState(false)
 
   const handleDelete = async () => {
@@ -55,6 +63,13 @@ export const FoodCard = ({ entry, onDelete }: FoodCardProps) => {
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-base font-bold text-accent">{entry.calories}</span>
             <span className="text-xs text-ink-muted">kcal</span>
+            <button
+              onClick={() => onEdit(entry)}
+              className="p-1.5 text-ink-muted hover:text-brand transition-colors rounded-lg hover:bg-brand/10"
+              aria-label="編輯"
+            >
+              <PencilIcon />
+            </button>
             <button
               onClick={handleDelete}
               className="p-1.5 text-ink-muted hover:text-red-400 transition-colors rounded-lg hover:bg-red-50"

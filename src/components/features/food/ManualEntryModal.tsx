@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 interface ManualEntryModalProps {
   onConfirm: (entry: FoodEntry) => void
   onClose: () => void
+  initialEntry?: FoodEntry
 }
 
 const NumInput = ({
@@ -37,19 +38,20 @@ const NumInput = ({
   </div>
 )
 
-export const ManualEntryModal = ({ onConfirm, onClose }: ManualEntryModalProps) => {
-  const [foodName, setFoodName] = useState('')
-  const [servingSize, setServingSize] = useState('1 份')
-  const [calories, setCalories] = useState(0)
-  const [protein, setProtein] = useState(0)
-  const [carbs, setCarbs] = useState(0)
-  const [fat, setFat] = useState(0)
-  const [fiber, setFiber] = useState(0)
+export const ManualEntryModal = ({ onConfirm, onClose, initialEntry }: ManualEntryModalProps) => {
+  const isEditing = !!initialEntry
+  const [foodName, setFoodName] = useState(initialEntry?.food_name ?? '')
+  const [servingSize, setServingSize] = useState(initialEntry?.serving_size ?? '1 份')
+  const [calories, setCalories] = useState(initialEntry?.calories ?? 0)
+  const [protein, setProtein] = useState(initialEntry?.protein ?? 0)
+  const [carbs, setCarbs] = useState(initialEntry?.carbs ?? 0)
+  const [fat, setFat] = useState(initialEntry?.fat ?? 0)
+  const [fiber, setFiber] = useState(initialEntry?.fiber ?? 0)
 
   const handleConfirm = () => {
     if (!foodName.trim()) return
     const entry: FoodEntry = {
-      id: `manual-${Date.now()}`,
+      id: initialEntry?.id ?? `manual-${Date.now()}`,
       food_name: foodName.trim(),
       serving_size: servingSize.trim() || '1 份',
       calories,
@@ -57,7 +59,8 @@ export const ManualEntryModal = ({ onConfirm, onClose }: ManualEntryModalProps) 
       carbs,
       fat,
       fiber,
-      logged_at: new Date().toISOString(),
+      logged_at: initialEntry?.logged_at ?? new Date().toISOString(),
+      image_data_url: initialEntry?.image_data_url,
     }
     onConfirm(entry)
   }
@@ -85,7 +88,7 @@ export const ManualEntryModal = ({ onConfirm, onClose }: ManualEntryModalProps) 
 
           <div className="px-5 pb-6 pt-2 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-ink">手動新增食物</h2>
+              <h2 className="text-lg font-bold text-ink">{isEditing ? '編輯食物' : '手動新增食物'}</h2>
               <button onClick={onClose} className="text-ink-muted hover:text-ink transition-colors text-sm">
                 取消
               </button>
@@ -134,7 +137,7 @@ export const ManualEntryModal = ({ onConfirm, onClose }: ManualEntryModalProps) 
               disabled={!foodName.trim()}
               onClick={handleConfirm}
             >
-              加入記錄
+              {isEditing ? '儲存變更' : '加入記錄'}
             </Button>
           </div>
         </motion.div>

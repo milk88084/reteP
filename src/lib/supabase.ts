@@ -1,19 +1,29 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl  = import.meta.env.VITE_SUPABASE_URL  as string
-const supabaseKey  = import.meta.env.VITE_SUPABASE_ANON_KEY as string
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
 
-// Base (unauthenticated) client — used for public/anon queries
-export const supabase = createClient(supabaseUrl, supabaseKey)
+// Clerk provides this; updated by SupabaseAuthSync on session change
+let _getToken: (() => Promise<string | null>) | null = null
 
-// Module-level authed client, swapped out by SupabaseAuthSync on each session change
-let _authed: SupabaseClient = supabase
+export const setTokenGetter = (fn: (() => Promise<string | null>) | null) => {
+  _getToken = fn
+}
 
-export const getAuthedSupabase = () => _authed
-
-export const setAuthedSupabase = (client: SupabaseClient) => { _authed = client }
-
-export const createAuthedClient = (token: string): SupabaseClient =>
-  createClient(supabaseUrl, supabaseKey, {
-    global: { headers: { Authorization: `Bearer ${token}` } },
-  })
+// Single client — injects a fresh Clerk JWT before every request
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  global: {
+    fetch: async (url, options = {}) => {
+      const token = _getToken ? await _getToken() : null
+      const headers = new Headers(options.headers as HeadersInit)
+      if (token) headers.set('Authorization', `Bearer ${token}`)
+      else        headers.delete('Authorization')
+      return fetch(url, { ...options, headers })
+    },
+  },
+  auth: {
+    persistSession:     false,
+    autoRefreshToken:   false,
+    detectSessionInUrl: false,
+  },
+})
