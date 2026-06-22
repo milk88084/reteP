@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
+import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
 import { cn } from '@/utils/cn'
 import { MetricNav } from '@/components/features/dashboard/MetricNav'
@@ -28,6 +29,7 @@ const Spinner = () => (
 
 export const AppShell = () => {
   const { isLoaded, isSignedIn, user } = useAuth()
+  const { isConfigured } = useSettingsStore()
 
   const { setShowManualEntry, triggerCamera } = useUIStore()
 
@@ -39,17 +41,22 @@ export const AppShell = () => {
   const touchStart = useRef<{ x: number; y: number } | null>(null)
   const mouseStart = useRef<{ x: number; y: number } | null>(null)
 
-  // On first sign-in: check if user has saved settings in Supabase.
-  // No row → new user → land on settings page to set up profile.
+  // On first sign-in: check if user has saved settings.
+  // Check local isConfigured first; fall back to Supabase query.
   useEffect(() => {
     if (!user?.id) return
+    if (isConfigured) { setPageReady(true); return }
     supabase
       .from('user_settings')
       .select('settings')
       .eq('user_id', user.id)
       .maybeSingle()
       .then(({ data, error }) => {
-        if (!error && !data?.settings) setPage('settings')
+        if (!error && data?.settings) {
+          useSettingsStore.getState().setSettings(data.settings)
+        } else if (!error && !data?.settings) {
+          setPage('settings')
+        }
         setPageReady(true)
       })
   }, [user?.id])
