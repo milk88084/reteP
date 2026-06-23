@@ -14,7 +14,7 @@ interface N8nFoodResponse {
   Details: string
 }
 
-export const recognizeFood = async (file: File): Promise<RecognizeResponse> => {
+export const recognizeFood = async (file: File, description?: string): Promise<RecognizeResponse> => {
   if (USE_MOCK) return mockRecognizeFood(file)
 
   const webhookUrl = import.meta.env.VITE_AI_WEBHOOK_URL as string | undefined
@@ -22,6 +22,7 @@ export const recognizeFood = async (file: File): Promise<RecognizeResponse> => {
 
   const form = new FormData()
   form.append('image', file)
+  if (description?.trim()) form.append('description', description.trim())
   const res = await fetch(webhookUrl, { method: 'POST', body: form })
   if (!res.ok) throw new Error(`AI webhook error: ${res.status}`)
 

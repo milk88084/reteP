@@ -9,12 +9,12 @@ export const useFoodRecognition = () => {
   const [result, setResult] = useState<RecognizeApiResult | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const recognize = useCallback(async (file: File) => {
+  const recognize = useCallback(async (file: File, description?: string) => {
     setStatus('loading')
     setError(null)
     setResult(null)
     try {
-      const res = await recognizeFood(file)
+      const res = await recognizeFood(file, description)
       if (res.success && res.data) {
         setResult(res.data)
         setStatus('success')

@@ -51,7 +51,7 @@ export interface RecognizeResponse {
   error?: string
 }
 
-export type GenderType = 'male' | 'female'
+export type GenderType = 'male' | 'female' | 'other'
 export type GoalType = 'lose' | 'maintain' | 'gain'
 
 export interface UserSettings {

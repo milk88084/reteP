@@ -35,7 +35,7 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   .skeleton-bg {
-    background: linear-gradient(90deg, #F3EDE4 25%, #E8E0D5 50%, #F3EDE4 75%);
+    background: linear-gradient(90deg, #1A1714 25%, #2A2520 50%, #1A1714 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }

@@ -28,7 +28,9 @@ export const calcTDEE = (
   const bmr =
     gender === 'male'
       ? 10 * weight + 6.25 * height - 5 * age + 5
-      : 10 * weight + 6.25 * height - 5 * age - 161
+      : gender === 'female'
+        ? 10 * weight + 6.25 * height - 5 * age - 161
+        : 10 * weight + 6.25 * height - 5 * age - 78
 
   const tdee = bmr * 1.55
   const adjust = { lose: -500, maintain: 0, gain: 300 }

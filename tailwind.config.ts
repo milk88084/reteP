@@ -1,39 +1,45 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
 
 export default {
-  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#FFC93C',
-          dark: '#C49300',
+          DEFAULT: "#BDF2DE",
+          dark: "#C49300",
         },
-        accent: '#FF6041',
-        bg: '#FAFAF7',
-        surface: '#F3EDE4',
-        border: '#E8E0D5',
+        accent: "#B6B9FE",
+        bg: "#0D0B09",
+        surface: "#1A1714",
+        border: "#2A2520",
         ink: {
-          DEFAULT: '#1E1A14',
-          muted: '#9A8F82',
+          DEFAULT: "#EDE8E0",
+          muted: "#7A6F65",
         },
       },
       fontFamily: {
-        sans: ['"DM Sans"', '"Noto Sans TC"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: [
+          '"DM Sans"',
+          '"Noto Sans TC"',
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+        ],
       },
       borderRadius: {
-        '4xl': '2rem',
+        "4xl": "2rem",
       },
       keyframes: {
         shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
       },
       animation: {
-        shimmer: 'shimmer 1.5s infinite',
+        shimmer: "shimmer 1.5s infinite",
       },
     },
   },
   plugins: [],
-} satisfies Config
+} satisfies Config;

@@ -86,6 +86,48 @@ main ──► feature/*  ──/create-pr──►  develop  ──merge──�
 
 > 兩步驟缺一不可；略過 review 直接實作視為流程違規。
 
+## 色系
+
+### 背景 / 表面
+
+| Token | Hex | 用途 |
+|-------|-----|------|
+| `bg-bg` | `#0D0B09` | 全域背景 |
+| `bg-surface` | `#1A1714` | 卡片、輸入框、手風琴背景 |
+| `border-border` | `#2A2520` | 分隔線、邊框、未選取按鈕背景 |
+
+### 文字
+
+| Token | Hex | 用途 |
+|-------|-----|------|
+| `text-ink` | `#EDE8E0` | 主要文字 |
+| `text-ink-muted` | `#7A6F65` | 次要文字、label、placeholder |
+
+### 品牌 / 強調
+
+| Token | Hex | 用途 |
+|-------|-----|------|
+| `bg-accent` / `text-accent` | `#B6B9FE` | Settings hero 背景、熱量指標、日期文字 |
+| `bg-brand` / `text-brand` | `#BDF2DE` | 碳水化合物指標 |
+
+### 指標色（hard-coded）
+
+| 指標 | Hex | 備註 |
+|------|-----|------|
+| 熱量 | `#B6B9FE` | = `accent` |
+| 蛋白質 | `#6366FF` | Indigo |
+| 碳水化合物 | `#BDF2DE` | = `brand` |
+| 脂肪 | `#CFE7FF` | Light blue |
+
+### 字型
+
+| 角色 | 字型 |
+|------|------|
+| 主要（中英） | DM Sans + Noto Sans TC |
+| 首頁大標題 | Bitcount Prop Single |
+
+---
+
 ## 樣式與字型
 
 - `src/index.css` — Tailwind 三層、reset、基礎元素樣式、color tokens（`bg-bg`、`text-ink` 等）。

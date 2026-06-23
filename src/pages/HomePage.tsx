@@ -39,9 +39,9 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
     }
   }, [pendingCamera]);
 
-  useEffect(() => {
-    if (selectedFile && previewUrl) recognize(selectedFile);
-  }, [selectedFile, previewUrl]);
+  const handleAnalyze = (description: string) => {
+    if (selectedFile) recognize(selectedFile, description);
+  };
 
   const handleConfirm = async (edited: RecognizeApiResult) => {
     const entry: FoodEntry = {
@@ -80,21 +80,21 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
     1: {
       current: summary.total_protein,
       goal: settings.protein_goal,
-      color: "#6B9EFF",
+      color: "#6366FF",
       label: "蛋白質",
       unit: "g",
     },
     2: {
       current: summary.total_calories,
       goal: settings.calorie_goal,
-      color: "#FF6041",
+      color: "#B6B9FE",
       label: "熱量",
       unit: "kcal",
     },
     3: {
       current: summary.total_carbs,
       goal: settings.carbs_goal,
-      color: "#FFC93C",
+      color: "#BDF2DE",
       label: "碳水化合物",
       unit: "g",
     },
@@ -130,7 +130,7 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
                 fontFamily: "'Bitcount Prop Single', cursive",
                 fontWeight: 300,
                 fontSize: "clamp(64px, 20vw, 90px)",
-                color: "#1E1A14",
+                color: "#EDE8E0",
               }}
             >
               {word}
@@ -150,13 +150,14 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
               transition={{ duration: 0.22 }}
               className="mt-4 text-center"
             >
-              <div className="text-4xl font-bold tracking-tight text-ink">
+              <div className="mt-4 text-6xl font-bold tracking-tight text-ink">
                 {percent}%
               </div>
-              <div className="mt-1 text-sm text-ink-muted">
-                {metric.label}　·　{formatNum(metric.current)} / {metric.goal}
+              <div className="mt-4 text-2xl text-ink-muted">
+                　{formatNum(metric.current)} / {metric.goal}
                 {metric.unit}
               </div>
+              <div className="mt-1 text-2xl text-ink-muted">{metric.label}</div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -165,6 +166,8 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
       {previewUrl && (
         <ImagePreview
           previewUrl={previewUrl}
+          isPending={!isLoading && !isError && !result}
+          onAnalyze={handleAnalyze}
           isLoading={isLoading}
           isError={isError}
           error={error}

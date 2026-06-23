@@ -1,149 +1,6 @@
 import { useSignIn } from "@clerk/clerk-react";
-import { useEffect, useRef } from "react";
-
-const COLS = 27;
-const ROWS = 27;
-const CENTER_C = (COLS - 1) / 2;
-const CENTER_R = (ROWS - 1) / 2;
-
-function lerpColor(a: string, b: string, amount: number) {
-  const ah = parseInt(a.replace("#", ""), 16);
-  const bh = parseInt(b.replace("#", ""), 16);
-  const ar = ah >> 16,
-    ag = (ah >> 8) & 0xff,
-    ab = ah & 0xff;
-  const br = bh >> 16,
-    bg = (bh >> 8) & 0xff,
-    bb = bh & 0xff;
-  const rr = ar + amount * (br - ar);
-  const rg = ag + amount * (bg - ag);
-  const rb = ab + amount * (bb - ab);
-  return (
-    "#" + (((1 << 24) + (rr << 16) + (rg << 8) + rb) | 0).toString(16).slice(1)
-  );
-}
-
-const CircleGridCanvas = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d")!;
-
-    let width = 0,
-      height = 0,
-      spacing = 0,
-      offsetX = 0,
-      offsetY = 0;
-    let animId = 0,
-      time = 0;
-
-    type Node = {
-      c: number;
-      r: number;
-      x: number;
-      y: number;
-      radius: number;
-      targetRadius: number;
-      maxR: number;
-      minR: number;
-    };
-    const nodes: Node[] = [];
-
-    for (let r = 0; r < ROWS; r++)
-      for (let c = 0; c < COLS; c++)
-        nodes.push({
-          c,
-          r,
-          x: 0,
-          y: 0,
-          radius: 0,
-          targetRadius: 0,
-          maxR: 0,
-          minR: 0,
-        });
-
-    const resize = () => {
-      width = canvas.offsetWidth;
-      height = canvas.offsetHeight;
-      canvas.width = width;
-      canvas.height = height;
-      spacing = Math.min(width / (COLS + 1), height / (ROWS + 1));
-      offsetX = (width - (COLS - 1) * spacing) / 2;
-      offsetY = (height - (ROWS - 1) * spacing) / 2;
-      nodes.forEach((n) => {
-        n.x = offsetX + n.c * spacing;
-        n.y = offsetY + n.r * spacing;
-        n.maxR = spacing * 0.35;
-        n.minR = spacing * 0.08;
-      });
-    };
-
-    const update = () => {
-      const progress = 0.62 + Math.sin(time * 0.0008) * 0.22;
-      const innerR = 1.8;
-      const maxDisplayR = 12.0;
-      const waveR = innerR + progress * (maxDisplayR - innerR);
-      const edgeW = 2.5;
-      nodes.forEach((n) => {
-        const dist = Math.hypot(n.c - CENTER_C, n.r - CENTER_R);
-        if (dist < innerR || dist > maxDisplayR) {
-          n.targetRadius = 0;
-        } else {
-          const outerFade = Math.max(0, Math.min(1, (maxDisplayR - dist) / 1.8));
-          const innerFade = Math.max(0, Math.min(1, (dist - innerR) / 1.0));
-          const influence = Math.max(0, Math.min(1, 1 - (dist - waveR) / edgeW));
-          const base = n.minR * outerFade * innerFade;
-          n.targetRadius = base + (n.maxR - base) * influence * innerFade;
-        }
-        n.radius = Math.max(0, n.radius + (n.targetRadius - n.radius) * 0.2);
-      });
-    };
-
-    const draw = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      const clipR = Math.min(width, height) * 0.48;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(width / 2, height / 2, clipR, 0, Math.PI * 2);
-      ctx.clip();
-
-      nodes.forEach((n) => {
-        if (n.radius < 0.3) return;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        const ratio = Math.max(
-          0,
-          Math.min(1, (n.radius - n.minR * 0.5) / (n.maxR - n.minR * 0.5)),
-        );
-        ctx.fillStyle = lerpColor("#c5c0b8", "#ff6b4a", ratio);
-        ctx.fill();
-      });
-
-      ctx.restore();
-    };
-
-    const loop = () => {
-      time += 16;
-      update();
-      draw();
-      animId = requestAnimationFrame(loop);
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-    loop();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
-};
+import { useEffect, useRef, useState } from "react";
+import { ParticleRing } from "@/components/features/dashboard/ParticleRing";
 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 18 18">
@@ -168,6 +25,19 @@ const GoogleIcon = () => (
 
 export const LoginPage = () => {
   const { isLoaded, signIn } = useSignIn();
+  const [progress, setProgress] = useState(0.62);
+  const timeRef = useRef(0);
+
+  useEffect(() => {
+    let animId: number;
+    const loop = () => {
+      timeRef.current += 16;
+      setProgress(0.62 + Math.sin(timeRef.current * 0.0008) * 0.22);
+      animId = requestAnimationFrame(loop);
+    };
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
+  }, []);
 
   const handleGoogle = async () => {
     if (!signIn) return;
@@ -179,11 +49,32 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="relative h-screen overflow-hidden bg-[#050505]">
-      <CircleGridCanvas />
+    <div
+      className="relative h-screen overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(circle at 50% 50%, #1a0d08 0%, #0a0705 65%, #B6B9FE 100%)",
+      }}
+    >
+      <div className="absolute inset-0 flex items-center justify-center">
+        <ParticleRing
+          progress={progress}
+          color="#B6B9FE"
+          inactiveColor="#3a3732"
+          size={280}
+        />
+      </div>
 
       <div className="absolute z-10 left-0 right-0 top-[72%] flex flex-col items-center px-8">
-        <h1 className="text-3xl font-bold text-white tracking-tight">reteP</h1>
+        <h1
+          className="text-3xl text-white tracking-tight"
+          style={{
+            fontFamily: "'Bitcount Prop Single', cursive",
+            fontWeight: 300,
+          }}
+        >
+          reteP
+        </h1>
         <p className="text-white/50 text-sm mt-1.5 font-medium">
           紀錄你的飲食習慣
         </p>

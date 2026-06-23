@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 interface ParticleRingProps {
   progress: number
   color?: string
+  inactiveColor?: string
   size?: number
 }
 
@@ -13,7 +14,7 @@ interface Dot {
   r: number
 }
 
-export const ParticleRing = ({ progress, color = '#1E1A14', size = 220 }: ParticleRingProps) => {
+export const ParticleRing = ({ progress, color = '#EDE8E0', inactiveColor = '#2A2520', size = 220 }: ParticleRingProps) => {
   const cx = size / 2
   const cy = size / 2
 
@@ -51,7 +52,7 @@ export const ParticleRing = ({ progress, color = '#1E1A14', size = 220 }: Partic
             cy={d.y}
             r={dotRadius}
             initial={false}
-            animate={{ fill: filled ? color : '#D9D2C6' }}
+            animate={{ fill: filled ? color : inactiveColor }}
             transition={{
               duration: 0.5,
               ease: 'easeInOut',

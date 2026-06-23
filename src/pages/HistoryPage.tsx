@@ -108,28 +108,28 @@ export const HistoryPage = () => {
     calories: {
       current: summary.total_calories,
       goal: settings.calorie_goal,
-      color: "#FF6041",
+      color: "#B6B9FE",
       label: "熱量",
       unit: "kcal",
     },
     protein: {
       current: summary.total_protein,
       goal: settings.protein_goal,
-      color: "#6B9EFF",
+      color: "#6366FF",
       label: "蛋白質",
       unit: "g",
     },
     carbs: {
       current: summary.total_carbs,
       goal: settings.carbs_goal,
-      color: "#FFC93C",
+      color: "#BDF2DE",
       label: "碳水化合物",
       unit: "g",
     },
     fat: {
       current: summary.total_fat,
       goal: settings.fat_goal,
-      color: "#FF8C69",
+      color: "#CFE7FF",
       label: "脂肪",
       unit: "g",
     },
@@ -159,17 +159,17 @@ export const HistoryPage = () => {
     <>
       <div className="space-y-6">
         {/* ── Calendar section — fills the viewport ── */}
-        <section className="flex min-h-[calc(100vh-9rem)] flex-col">
+        <section className="h-[100dvh] flex flex-col -mt-4">
           {/* Top: date hero */}
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="text-[8rem] leading-none font-bold tracking-tight text-[#FF8C69]">
-              {format(selected, "d")}
+          <div className="h-[58%] flex flex-col pt-6 pb-4">
+            <div className="flex-1 flex flex-col justify-center">
+              <div className="text-[8rem] leading-none font-bold tracking-tight text-[#B6B9FE]">
+                {format(selected, "d")}
+              </div>
             </div>
-            <div className="mt-1 flex items-end justify-between">
-              <div>
-                <div className="text-6xl font-bold uppercase tracking-wide text-ink">
-                  {format(selected, "MMMM")}
-                </div>
+            <div className="flex items-end justify-between">
+              <div className="text-6xl font-bold uppercase tracking-wide text-ink">
+                {format(selected, "MMMM")}
               </div>
               <div className="text-6xl font-medium text-ink-muted">
                 {format(selected, "EEE")}
@@ -178,7 +178,7 @@ export const HistoryPage = () => {
           </div>
 
           {/* Bottom: circle calendar */}
-          <div className="pb-6">
+          <div className="flex-1 flex flex-col pt-4 pb-4 min-h-0 overflow-y-auto">
             {/* Month navigation */}
             <div className="flex items-center justify-between mb-3">
               <button
@@ -288,15 +288,13 @@ export const HistoryPage = () => {
               onClick={() => setActiveMetric("calories")}
               className={cn(
                 "rounded-2xl p-4 text-left transition-all active:scale-95",
-                activeMetric === "calories" ? "bg-ink" : "bg-surface",
+                activeMetric === "calories" ? "bg-[#B6B9FE]" : "bg-surface",
               )}
             >
               <div
                 className={cn(
                   "text-xs",
-                  activeMetric === "calories"
-                    ? "text-white/60"
-                    : "text-ink-muted",
+                  activeMetric === "calories" ? "text-black" : "text-ink-muted",
                 )}
               >
                 已攝取熱量
@@ -304,7 +302,7 @@ export const HistoryPage = () => {
               <div
                 className={cn(
                   "mt-1 text-xl font-bold",
-                  activeMetric === "calories" ? "text-white" : "text-ink",
+                  activeMetric === "calories" ? "text-black" : "text-ink",
                 )}
               >
                 {summary.total_calories}{" "}
@@ -312,7 +310,7 @@ export const HistoryPage = () => {
                   className={cn(
                     "text-sm font-medium",
                     activeMetric === "calories"
-                      ? "text-white/60"
+                      ? "text-black"
                       : "text-ink-muted",
                   )}
                 >
@@ -337,7 +335,7 @@ export const HistoryPage = () => {
               onClick={() => setActiveMetric("protein")}
               className={cn(
                 "rounded-2xl p-4 text-left transition-all active:scale-95",
-                activeMetric === "protein" ? "bg-[#6B9EFF]" : "bg-surface",
+                activeMetric === "protein" ? "bg-[#6366FF]" : "bg-surface",
               )}
             >
               <div
@@ -376,13 +374,13 @@ export const HistoryPage = () => {
               onClick={() => setActiveMetric("carbs")}
               className={cn(
                 "rounded-2xl p-4 text-left transition-all active:scale-95",
-                activeMetric === "carbs" ? "bg-brand" : "bg-surface",
+                activeMetric === "carbs" ? "bg-[#BDF2DE]" : "bg-surface",
               )}
             >
               <div
                 className={cn(
                   "text-xs",
-                  activeMetric === "carbs" ? "text-ink/60" : "text-ink-muted",
+                  activeMetric === "carbs" ? "text-black" : "text-ink-muted",
                 )}
               >
                 碳水化合物
@@ -390,14 +388,14 @@ export const HistoryPage = () => {
               <div
                 className={cn(
                   "mt-1 text-xl font-bold",
-                  activeMetric === "carbs" ? "text-ink" : "text-ink",
+                  activeMetric === "carbs" ? "text-black" : "text-ink",
                 )}
               >
                 {formatNum(summary.total_carbs)}
                 <span
                   className={cn(
                     "text-sm font-medium",
-                    activeMetric === "carbs" ? "text-ink/60" : "text-ink-muted",
+                    activeMetric === "carbs" ? "text-black" : "text-ink-muted",
                   )}
                 >
                   {" "}
@@ -411,13 +409,13 @@ export const HistoryPage = () => {
               onClick={() => setActiveMetric("fat")}
               className={cn(
                 "rounded-2xl p-4 text-left transition-all active:scale-95",
-                activeMetric === "fat" ? "bg-[#FF8C69]" : "bg-surface",
+                activeMetric === "fat" ? "bg-[#CFE7FF] " : "bg-surface",
               )}
             >
               <div
                 className={cn(
                   "text-xs",
-                  activeMetric === "fat" ? "text-white/70" : "text-ink-muted",
+                  activeMetric === "fat" ? "text-black" : "text-ink-muted",
                 )}
               >
                 脂肪
@@ -425,14 +423,14 @@ export const HistoryPage = () => {
               <div
                 className={cn(
                   "mt-1 text-xl font-bold",
-                  activeMetric === "fat" ? "text-white" : "text-ink",
+                  activeMetric === "fat" ? "text-black" : "text-ink",
                 )}
               >
                 {formatNum(summary.total_fat)}
                 <span
                   className={cn(
                     "text-sm font-medium",
-                    activeMetric === "fat" ? "text-white/70" : "text-ink-muted",
+                    activeMetric === "fat" ? "text-black" : "text-ink-muted",
                   )}
                 >
                   {" "}
