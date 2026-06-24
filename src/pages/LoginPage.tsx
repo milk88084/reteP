@@ -44,7 +44,7 @@ export const LoginPage = () => {
     await signIn.authenticateWithRedirect({
       strategy: "oauth_google",
       redirectUrl: `${window.location.origin}/sso-callback`,
-      redirectUrlComplete: "/",
+      redirectUrlComplete: `${window.location.origin}/`,
     });
   };
 

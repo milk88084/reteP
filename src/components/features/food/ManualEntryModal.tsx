@@ -99,23 +99,43 @@ const NumInput = ({
   unit: string
   value: number
   onChange: (v: number) => void
-}) => (
-  <div className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
-    <p className="text-sm font-medium text-ink">{label}</p>
-    <div className="flex items-center gap-2">
-      <input
-        type="number"
-        value={value === 0 ? '' : value}
-        min={0}
-        placeholder="0"
-        onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
-        onFocus={(e) => e.target.select()}
-        className="w-20 text-right bg-bg rounded-xl px-3 py-1.5 text-sm font-semibold text-ink outline-none focus:ring-2 focus:ring-brand"
-      />
-      <span className="text-xs text-ink-muted w-8">{unit}</span>
+}) => {
+  const [raw, setRaw] = useState(value === 0 ? '' : String(value))
+  const committed = useRef(value)
+
+  useEffect(() => {
+    if (committed.current !== value) {
+      committed.current = value
+      setRaw(value === 0 ? '' : String(value))
+    }
+  }, [value])
+
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
+      <p className="text-sm font-medium text-ink">{label}</p>
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          inputMode="decimal"
+          value={raw}
+          placeholder="0"
+          onChange={(e) => {
+            const str = e.target.value
+            if (!/^\d*\.?\d*$/.test(str)) return
+            setRaw(str)
+            const n = parseFloat(str)
+            const next = isNaN(n) ? 0 : n
+            committed.current = next
+            onChange(next)
+          }}
+          onFocus={(e) => e.target.select()}
+          className="w-20 text-right bg-bg rounded-xl px-3 py-1.5 text-sm font-semibold text-ink outline-none focus:ring-2 focus:ring-brand"
+        />
+        <span className="text-xs text-ink-muted w-8">{unit}</span>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export const ManualEntryModal = ({ onConfirm, onClose, initialEntry, initialDate }: ManualEntryModalProps) => {
   const isEditing = !!initialEntry

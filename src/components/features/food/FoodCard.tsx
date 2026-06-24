@@ -4,6 +4,22 @@ import { FoodEntry } from '@/types'
 import { formatTime } from '@/utils/dateUtils'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 
+const EMOJI_PALETTE = [
+  '🍱','🍜','🍛','🍝','🍲','🥗','🥙','🌮','🌯',
+  '🍔','🌭','🍕','🥪','🍳','🥘','🍗','🍖',
+  '🍰','🎂','🧁','🍩','🍪','🍫','🍬','🍭',
+  '🥤','☕','🧃','🍵','🥛',
+  '🥐','🥖','🧇','🥓','🧀','🥚',
+  '🍎','🍊','🍋','🍇','🍓','🥝','🥑',
+  '🥦','🥕','🌽','🥔','🍅',
+]
+
+const foodEmoji = (name: string): string => {
+  let h = 0
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0
+  return EMOJI_PALETTE[h % EMOJI_PALETTE.length]
+}
+
 interface FoodCardProps {
   entry: FoodEntry
   onDelete: (id: string) => void
@@ -50,7 +66,7 @@ export const FoodCard = ({ entry, onDelete, onEdit }: FoodCardProps) => {
               />
             ) : (
               <div className="w-16 h-16 rounded-xl bg-brand/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-2xl select-none">{entry.emoji || '🍱'}</span>
+                <span className="text-2xl select-none">{entry.emoji || foodEmoji(entry.food_name)}</span>
               </div>
             )}
             <div className="flex-1 min-w-0">
