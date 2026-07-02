@@ -1,49 +1,29 @@
 import { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useFoodLogStore } from '@/store/foodLogStore'
-import { useSettingsStore } from '@/store/settingsStore'
-import { supabase } from '@/lib/supabase'
-import { FoodEntry } from '@/types'
+import { getLogsRange } from '@/services/foodRecognitionApi'
 
 /**
- * Loads the user's data from Supabase once per login and hydrates Zustand stores.
+ * Loads the user's last 60 days of food logs from the backend once per login
+ * and hydrates the food-log store. Settings are loaded by AppShell (it needs
+ * the configured/not-configured distinction for first-sign-in gating).
  * Renders nothing — side-effects only.
  */
 export const DataSync = () => {
   const { isSignedIn, user } = useAuth()
   const { setLogs } = useFoodLogStore()
-  const { setSettings } = useSettingsStore()
 
   useEffect(() => {
     if (!isSignedIn || !user) return
 
-    // Load last 60 days of food logs
     const since = new Date()
     since.setDate(since.getDate() - 60)
-    const sinceStr = since.toISOString().slice(0, 10)
+    const from = since.toISOString().slice(0, 10)
+    const to = new Date().toISOString().slice(0, 10)
 
-    supabase.from('food_logs')
-      .select('date, entry')
-      .eq('user_id', user.id)
-      .gte('date', sinceStr)
-      .then(({ data, error }) => {
-        if (error || !data) return
-        const grouped: Record<string, FoodEntry[]> = {}
-        for (const row of data) {
-          grouped[row.date] = [...(grouped[row.date] ?? []), row.entry as FoodEntry]
-        }
-        setLogs(grouped)
-      })
-
-    // Load user settings
-    supabase.from('user_settings')
-      .select('settings')
-      .eq('user_id', user.id)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (error || !data?.settings) return
-        setSettings(data.settings)
-      })
+    getLogsRange(from, to)
+      .then(setLogs)
+      .catch((e) => console.error('[DataSync]', e))
   }, [user?.id, isSignedIn])
 
   return null

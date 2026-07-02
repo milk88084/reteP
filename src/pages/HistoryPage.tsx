@@ -22,10 +22,9 @@ import { useSettingsStore } from "@/store/settingsStore";
 import { getTodayStr, getDateStr, formatDateHeader } from "@/utils/dateUtils";
 import { formatNum } from "@/utils/nutritionCalc";
 import { cn } from "@/utils/cn";
-import { deleteEntry, updateEntry } from "@/services/foodRecognitionApi";
+import { deleteEntry, updateEntry, getLogsRange } from "@/services/foodRecognitionApi";
 import { ManualEntryModal } from "@/components/features/food/ManualEntryModal";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/lib/supabase";
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -50,26 +49,19 @@ export const HistoryPage = () => {
   const logs = useFoodLogStore((s) => s.logs);
   const { settings } = useSettingsStore();
 
-  /* Re-fetch from Supabase every time HistoryPage mounts */
+  /* Re-fetch the last 60 days from the backend every time HistoryPage mounts */
   const refreshLogs = useCallback(async () => {
     if (!user?.id) return;
     const since = new Date();
     since.setDate(since.getDate() - 60);
-    const sinceStr = since.toISOString().slice(0, 10);
-    const { data, error } = await supabase
-      .from("food_logs")
-      .select("date, entry")
-      .eq("user_id", user.id)
-      .gte("date", sinceStr);
-    if (error || !data) return;
-    const grouped: Record<string, FoodEntry[]> = {};
-    for (const row of data) {
-      grouped[row.date] = [
-        ...(grouped[row.date] ?? []),
-        row.entry as FoodEntry,
-      ];
+    const from = since.toISOString().slice(0, 10);
+    const to = new Date().toISOString().slice(0, 10);
+    try {
+      const grouped = await getLogsRange(from, to);
+      setLogs(grouped);
+    } catch (e) {
+      console.error("[refreshLogs]", e);
     }
-    setLogs(grouped);
   }, [user?.id]);
 
   useEffect(() => {
@@ -140,7 +132,7 @@ export const HistoryPage = () => {
 
   const handleDelete = async (id: string) => {
     removeEntry(selectedDate, id);
-    await deleteEntry(id, selectedDate, user?.id ?? "").catch((e) =>
+    await deleteEntry(id).catch((e) =>
       console.error("[deleteEntry]", e),
     );
     refreshLogs();
@@ -149,7 +141,7 @@ export const HistoryPage = () => {
   const handleEdit = async (updated: FoodEntry, _date: string) => {
     updateEntryStore(selectedDate, updated);
     setEditingEntry(null);
-    await updateEntry(updated, selectedDate, user?.id ?? "").catch((e) =>
+    await updateEntry(updated).catch((e) =>
       console.error("[updateEntry]", e),
     );
     refreshLogs();

@@ -9,7 +9,7 @@
 | UI | React 18 + TypeScript + Vite |
 | 樣式 | Tailwind CSS + Framer Motion |
 | 狀態 | Zustand |
-| 後端 / 資料庫 | Supabase |
+| 後端 / 資料庫 | FastAPI + PostgreSQL（`reteP-backend`，前端透過 REST API 存取） |
 | 認證 | Clerk |
 | 食物辨識 | n8n webhook（可抽換） |
 | 行動裝置 | Capacitor（iOS） |
@@ -26,8 +26,7 @@ cp .env.example .env.local
 | 變數 | 說明 | 必要 |
 |------|------|------|
 | `VITE_CLERK_PUBLISHABLE_KEY` | Clerk Dashboard → API Keys → Publishable key | ✓ |
-| `VITE_SUPABASE_URL` | Supabase Project Settings → API | ✓ |
-| `VITE_SUPABASE_ANON_KEY` | Supabase Project Settings → API | ✓ |
+| `VITE_API_BASE_URL` | 後端 API 網址（本機 `http://localhost:8000`） | ✓ |
 | `VITE_AI_WEBHOOK_URL` | n8n webhook 或其他食物辨識服務的 URL | 選填 |
 | `VITE_USE_MOCK` | 設為 `true` 可跳過所有外部呼叫，使用 mock 資料 | 選填 |
 

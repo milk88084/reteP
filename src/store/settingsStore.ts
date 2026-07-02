@@ -2,12 +2,12 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { UserSettings } from '@/types'
 import { DEFAULT_SETTINGS } from '@/constants'
-import { supabase } from '@/lib/supabase'
+import { putSettings } from '@/services/foodRecognitionApi'
 
 interface SettingsState {
   settings: UserSettings
   isConfigured: boolean
-  updateSettings: (partial: Partial<UserSettings>, userId?: string) => void
+  updateSettings: (partial: Partial<UserSettings>) => void
   setSettings:    (settings: UserSettings) => void
 }
 
@@ -17,20 +17,16 @@ export const useSettingsStore = create<SettingsState>()(
       settings: { ...DEFAULT_SETTINGS },
       isConfigured: false,
 
-      setSettings: (settings) => set({ settings }),
+      // Called when we load real settings from the backend.
+      setSettings: (settings) => set({ settings, isConfigured: true }),
 
-      updateSettings: (partial, userId) => {
-        set((state) => ({ settings: { ...state.settings, ...partial }, isConfigured: true }))
+      updateSettings: (partial) => {
+        const merged = { ...get().settings, ...partial }
+        set({ settings: merged, isConfigured: true })
 
-        if (userId) {
-          const merged = { ...get().settings, ...partial }
-          supabase
-            .from('user_settings')
-            .upsert({ user_id: userId, settings: merged }, { onConflict: 'user_id' })
-            .then(({ error }) => {
-              if (error) console.error('[updateSettings] Supabase error:', error)
-            })
-        }
+        putSettings(merged).catch((e) =>
+          console.error('[updateSettings] API error:', e),
+        )
       },
     }),
     { name: 'diet_settings_v2' }

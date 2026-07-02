@@ -10,7 +10,7 @@ import { DataSync } from '@/components/DataSync'
 import { HomePage } from '@/pages/HomePage'
 import { HistoryPage } from '@/pages/HistoryPage'
 import { SettingsPage } from '@/pages/SettingsPage'
-import { supabase } from '@/lib/supabase'
+import { getSettings } from '@/services/foodRecognitionApi'
 
 type PageId = 'settings' | 'home' | 'history'
 const ORDER: Record<PageId, number> = { history: 0, home: 1, settings: 2 }
@@ -42,23 +42,20 @@ export const AppShell = () => {
   const mouseStart = useRef<{ x: number; y: number } | null>(null)
 
   // On first sign-in: check if user has saved settings.
-  // Check local isConfigured first; fall back to Supabase query.
+  // Check local isConfigured first; fall back to a backend query.
   useEffect(() => {
     if (!user?.id) return
     if (isConfigured) { setPageReady(true); return }
-    supabase
-      .from('user_settings')
-      .select('settings')
-      .eq('user_id', user.id)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (!error && data?.settings) {
-          useSettingsStore.getState().setSettings(data.settings)
-        } else if (!error && !data?.settings) {
+    getSettings()
+      .then((settings) => {
+        if (settings) {
+          useSettingsStore.getState().setSettings(settings)
+        } else {
           setPage('settings')
         }
-        setPageReady(true)
       })
+      .catch((e) => console.error('[AppShell settings]', e))
+      .finally(() => setPageReady(true))
   }, [user?.id])
 
   if (!isLoaded) return <Spinner />

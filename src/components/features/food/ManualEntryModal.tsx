@@ -7,6 +7,7 @@ import { FoodEntry } from '@/types'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { getTodayStr } from '@/utils/dateUtils'
+import { newId } from '@/utils/id'
 
 const FOOD_EMOJIS = [
   '🍱','🍜','🍛','🍝','🍲','🥗','🥙','🌮','🌯',
@@ -164,7 +165,7 @@ export const ManualEntryModal = ({ onConfirm, onClose, initialEntry, initialDate
   }, [showEmojiPicker])
 
   const buildEntry = (): FoodEntry => ({
-    id: initialEntry?.id ?? `manual-${Date.now()}`,
+    id: initialEntry?.id ?? newId(),
     food_name: foodName.trim(),
     serving_size: servingSize.trim() || '1 份',
     emoji: emoji || undefined,

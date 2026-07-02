@@ -629,7 +629,7 @@ export const SettingsPage = ({ onSaved }: SettingsPageProps) => {
             : "text-red-400";
 
   const saveBody = () => {
-    updateSettings(draft, user?.id);
+    updateSettings(draft);
     setBodySaved(true);
     setTimeout(() => {
       setBodySaved(false);
@@ -638,7 +638,7 @@ export const SettingsPage = ({ onSaved }: SettingsPageProps) => {
   };
 
   const saveGoals = () => {
-    updateSettings(draft, user?.id);
+    updateSettings(draft);
     setGoalsSaved(true);
     setTimeout(() => {
       setGoalsSaved(false);
