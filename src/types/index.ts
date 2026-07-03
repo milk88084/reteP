@@ -24,8 +24,27 @@ export interface Food extends NutritionInfo {
   name_en?: string | null
   category?: string | null
   serving_size: string
+  /** Portion unit + grams (e.g. 碗 / 200). null → no portion data, treat as per-100g. */
+  portion_label?: string | null
+  portion_grams?: number | null
   owner_id?: string | null
   source: string
+}
+
+/** One suggested food in a nutrition recommendation (backend GET /recommendations). */
+export interface FoodSuggestion extends NutritionInfo {
+  food_id: string
+  name: string
+  portion_label?: string | null
+  portion_grams?: number | null
+}
+
+export interface Recommendation {
+  date: string
+  /** The most-lacking nutrient today ('protein' | 'carbs' | 'fat' | 'fiber'), or null if all goals met. */
+  primary_deficit: string | null
+  message: string
+  suggestions: FoodSuggestion[]
 }
 
 export interface DailySummary {

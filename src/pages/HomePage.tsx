@@ -4,6 +4,7 @@ import { ParticleRing } from "@/components/features/dashboard/ParticleRing";
 import { ImagePreview } from "@/components/features/camera/ImagePreview";
 import { ManualEntryModal } from "@/components/features/food/ManualEntryModal";
 import { FoodLibraryModal } from "@/components/features/food/FoodLibraryModal";
+import { RecommendationModal } from "@/components/features/food/RecommendationModal";
 import { useCamera } from "@/hooks/useCamera";
 import { useFoodRecognition } from "@/hooks/useFoodRecognition";
 import { useFoodLogStore } from "@/store/foodLogStore";
@@ -13,7 +14,7 @@ import { getTodayStr } from "@/utils/dateUtils";
 import { formatNum } from "@/utils/nutritionCalc";
 import { FoodEntry, RecognizeApiResult } from "@/types";
 import { saveEntry } from "@/services/foodRecognitionApi";
-import { foodToPrefill } from "@/services/transform";
+import { foodToPrefill, suggestionToPrefill } from "@/services/transform";
 
 const todayStr = getTodayStr();
 
@@ -32,6 +33,8 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
     setShowManualEntry,
     showFoodLibrary,
     setShowFoodLibrary,
+    showRecommendation,
+    setShowRecommendation,
     prefillEntry,
     setPrefillEntry,
     pendingCamera,
@@ -154,7 +157,14 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
 
         {/* Particle ring — larger and positioned toward the top of the remaining space */}
         <div className="absolute inset-x-0 bottom-0 top-[180px] flex flex-col items-center justify-start pt-6">
-          <ParticleRing progress={progress} color={metric.color} size={300} />
+          <button
+            type="button"
+            onClick={() => setShowRecommendation(true)}
+            aria-label="查看今日營養推薦"
+            className="bg-transparent border-0 p-0 cursor-pointer"
+          >
+            <ParticleRing progress={progress} color={metric.color} size={300} />
+          </button>
           <AnimatePresence mode="wait">
             <motion.div
               key={navIdx}
@@ -210,6 +220,17 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
             setShowManualEntry(true);
           }}
           onClose={() => setShowFoodLibrary(false)}
+        />
+      )}
+
+      {showRecommendation && (
+        <RecommendationModal
+          onSelect={(s) => {
+            setPrefillEntry(suggestionToPrefill(s));
+            setShowRecommendation(false);
+            setShowManualEntry(true);
+          }}
+          onClose={() => setShowRecommendation(false)}
         />
       )}
     </>

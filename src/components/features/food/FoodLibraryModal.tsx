@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Food } from '@/types'
 import { searchFoods } from '@/services/foodRecognitionApi'
+import { portionView } from '@/services/transform'
 import { formatNum } from '@/utils/nutritionCalc'
 
 interface FoodLibraryModalProps {
@@ -94,25 +95,31 @@ export const FoodLibraryModal = ({ onSelect, onClose }: FoodLibraryModalProps) =
               </p>
             ) : (
               <div className="space-y-1.5">
-                {foods.map((food) => (
-                  <button
-                    key={food.id}
-                    type="button"
-                    onClick={() => onSelect(food)}
-                    className="w-full flex items-center justify-between gap-3 bg-surface rounded-2xl px-4 py-3 text-left active:scale-[0.98] transition-transform"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-ink truncate">{food.name}</p>
-                      <p className="text-xs text-ink-muted mt-0.5 truncate">
-                        {food.serving_size}・蛋 {formatNum(food.protein)}g・碳 {formatNum(food.carbs)}g・脂 {formatNum(food.fat)}g
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 text-right">
-                      <span className="text-sm font-bold text-ink">{formatNum(food.calories)}</span>
-                      <span className="text-xs text-ink-muted ml-0.5">kcal</span>
-                    </div>
-                  </button>
-                ))}
+                {foods.map((food) => {
+                  const v = portionView(food)
+                  return (
+                    <button
+                      key={food.id}
+                      type="button"
+                      onClick={() => onSelect(food)}
+                      className="w-full flex items-center justify-between gap-3 bg-surface rounded-2xl px-4 py-3 text-left active:scale-[0.98] transition-transform"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-ink truncate">
+                          {food.name}
+                          <span className="text-ink-muted font-normal"> · {v.label}</span>
+                        </p>
+                        <p className="text-xs text-ink-muted mt-0.5 truncate">
+                          蛋 {formatNum(v.protein)}g・碳 {formatNum(v.carbs)}g・脂 {formatNum(v.fat)}g
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 text-right">
+                        <span className="text-sm font-bold text-ink">{formatNum(v.calories)}</span>
+                        <span className="text-xs text-ink-muted ml-0.5">kcal</span>
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>

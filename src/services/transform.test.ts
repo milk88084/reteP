@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { groupDailyLogs, foodToPrefill } from './transform'
+import { groupDailyLogs, foodToPrefill, suggestionToPrefill, portionView } from './transform'
 import { newId } from '@/utils/id'
-import { Food, FoodEntry } from '@/types'
+import { Food, FoodEntry, FoodSuggestion } from '@/types'
 
 const entry = (id: string): FoodEntry => ({
   id,
@@ -28,6 +28,36 @@ describe('groupDailyLogs', () => {
 
   it('returns an empty object for no days', () => {
     expect(groupDailyLogs([])).toEqual({})
+  })
+})
+
+describe('portionView', () => {
+  const base = { calories: 350, protein: 8, carbs: 77, fat: 2.6, fiber: 3.3 }
+
+  it('scales nutrition to one portion when portion_grams is set', () => {
+    const v = portionView({ ...base, portion_label: '碗', portion_grams: 200 })
+    expect(v.label).toBe('1碗')
+    expect(v.serving_size).toBe('1碗（200g）')
+    expect(v.calories).toBe(700) // 350 * 2
+    expect(v.carbs).toBe(154) // 77 * 2
+  })
+
+  it('rounds scaled values to one decimal', () => {
+    const v = portionView({ ...base, portion_label: '份', portion_grams: 150 })
+    expect(v.protein).toBe(12) // 8 * 1.5
+    expect(v.fat).toBe(3.9) // 2.6 * 1.5
+  })
+
+  it('falls back to per-100g when no portion data', () => {
+    const v = portionView({ ...base })
+    expect(v.label).toBe('每100g')
+    expect(v.serving_size).toBe('每100g')
+    expect(v.calories).toBe(350)
+  })
+
+  it('falls back when grams is zero or label missing', () => {
+    expect(portionView({ ...base, portion_label: '碗', portion_grams: 0 }).label).toBe('每100g')
+    expect(portionView({ ...base, portion_grams: 200 }).label).toBe('每100g')
   })
 })
 
@@ -60,6 +90,27 @@ describe('foodToPrefill', () => {
 
   it('maps a null name_en to undefined', () => {
     expect(foodToPrefill({ ...food, name_en: null }).food_name_en).toBeUndefined()
+  })
+})
+
+describe('suggestionToPrefill', () => {
+  const suggestion: FoodSuggestion = {
+    food_id: 's1',
+    name: '雞胸肉',
+    calories: 165,
+    protein: 31,
+    carbs: 0,
+    fat: 3.6,
+    fiber: 0,
+  }
+
+  it('maps a suggestion to a per-100g prefill without an id', () => {
+    const seed = suggestionToPrefill(suggestion)
+    expect(seed.food_name).toBe('雞胸肉')
+    expect(seed.serving_size).toBe('每100g')
+    expect(seed.protein).toBe(31)
+    expect(seed).not.toHaveProperty('id')
+    expect(seed).not.toHaveProperty('logged_at')
   })
 })
 

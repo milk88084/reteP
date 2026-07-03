@@ -1,4 +1,4 @@
-import { Food, FoodEntry, DailyLog, DailySummary, RecognizeResponse, RecognizeApiResult, UserSettings } from '@/types'
+import { Food, FoodEntry, DailyLog, DailySummary, Recommendation, RecognizeResponse, RecognizeApiResult, UserSettings } from '@/types'
 import { MOCK_FOODS } from '@/constants'
 import { sumEntries } from '@/utils/nutritionCalc'
 import { newId } from '@/utils/id'
@@ -55,6 +55,24 @@ export const mockSearchFoods = async (search?: string): Promise<Food[]> => {
   const q = search?.trim().toLowerCase()
   if (!q) return MOCK_LIBRARY.slice(0, 50)
   return MOCK_LIBRARY.filter((f) => f.name.toLowerCase().includes(q)).slice(0, 50)
+}
+
+export const mockGetRecommendations = async (date: string): Promise<Recommendation> => {
+  await delay(300)
+  return {
+    date,
+    primary_deficit: 'protein',
+    message: '今天蛋白質還差 40g，建議補充以下食物',
+    suggestions: MOCK_LIBRARY.slice(0, 3).map((f) => ({
+      food_id: f.id,
+      name: f.name,
+      calories: f.calories,
+      protein: f.protein,
+      carbs: f.carbs,
+      fat: f.fat,
+      fiber: f.fiber,
+    })),
+  }
 }
 
 export const mockGetLogs = async (date: string): Promise<DailyLog> => {

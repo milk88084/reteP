@@ -1,8 +1,9 @@
 import axios from 'axios'
-import { RecognizeResponse, DailyLog, Food, FoodEntry, UserSettings } from '@/types'
+import { RecognizeResponse, DailyLog, Food, FoodEntry, Recommendation, UserSettings } from '@/types'
 import {
   mockRecognizeFood,
   mockSearchFoods,
+  mockGetRecommendations,
   mockGetLogs,
   mockGetLogsRange,
   mockSaveEntry,
@@ -67,6 +68,15 @@ export const searchFoods = async (search?: string): Promise<Food[]> => {
   if (USE_MOCK) return mockSearchFoods(search)
   const params = search?.trim() ? { search: search.trim() } : undefined
   const { data } = await apiClient.get<Food[]>('/foods', { params })
+  return data
+}
+
+// ── 營養推薦（GET /recommendations）────────────────────────────────
+export const getRecommendations = async (date: string): Promise<Recommendation> => {
+  if (USE_MOCK) return mockGetRecommendations(date)
+  const { data } = await apiClient.get<Recommendation>('/recommendations', {
+    params: { date },
+  })
   return data
 }
 
