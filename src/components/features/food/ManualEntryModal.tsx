@@ -88,6 +88,9 @@ interface ManualEntryModalProps {
   onClose: () => void
   initialEntry?: FoodEntry
   initialDate?: string
+  /** Seed values for a NEW entry (e.g. picked from the food library). Unlike
+   *  initialEntry this does not switch the modal into edit mode. */
+  prefill?: Partial<FoodEntry>
 }
 
 const NumInput = ({
@@ -138,18 +141,19 @@ const NumInput = ({
   )
 }
 
-export const ManualEntryModal = ({ onConfirm, onClose, initialEntry, initialDate }: ManualEntryModalProps) => {
+export const ManualEntryModal = ({ onConfirm, onClose, initialEntry, initialDate, prefill }: ManualEntryModalProps) => {
   const isEditing = !!initialEntry
-  const [emoji, setEmoji] = useState(initialEntry?.emoji ?? '')
+  const seed = initialEntry ?? prefill
+  const [emoji, setEmoji] = useState(seed?.emoji ?? '')
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-  const [foodName, setFoodName] = useState(initialEntry?.food_name ?? '')
-  const [servingSize, setServingSize] = useState(initialEntry?.serving_size ?? '1 份')
+  const [foodName, setFoodName] = useState(seed?.food_name ?? '')
+  const [servingSize, setServingSize] = useState(seed?.serving_size ?? '1 份')
   const [logDate, setLogDate] = useState(initialDate ?? getTodayStr())
-  const [calories, setCalories] = useState(initialEntry?.calories ?? 0)
-  const [protein, setProtein] = useState(initialEntry?.protein ?? 0)
-  const [carbs, setCarbs] = useState(initialEntry?.carbs ?? 0)
-  const [fat, setFat] = useState(initialEntry?.fat ?? 0)
-  const [fiber, setFiber] = useState(initialEntry?.fiber ?? 0)
+  const [calories, setCalories] = useState(seed?.calories ?? 0)
+  const [protein, setProtein] = useState(seed?.protein ?? 0)
+  const [carbs, setCarbs] = useState(seed?.carbs ?? 0)
+  const [fat, setFat] = useState(seed?.fat ?? 0)
+  const [fiber, setFiber] = useState(seed?.fiber ?? 0)
   const [showConfirm, setShowConfirm] = useState(false)
   const emojiPickerRef = useRef<HTMLDivElement>(null)
 

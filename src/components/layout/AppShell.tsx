@@ -31,7 +31,7 @@ export const AppShell = () => {
   const { isLoaded, isSignedIn, user } = useAuth()
   const { isConfigured } = useSettingsStore()
 
-  const { setShowManualEntry, triggerCamera } = useUIStore()
+  const { setShowManualEntry, setShowFoodLibrary, setPrefillEntry } = useUIStore()
 
   const [page,      setPage]      = useState<PageId>('home')
   const [direction, setDirection] = useState(0)
@@ -68,10 +68,10 @@ export const AppShell = () => {
     setPage(to)
   }
 
-  /* idx 0 → manual entry, idx 4 → camera, 1-3 → change metric */
+  /* idx 0 → manual entry, idx 4 → food library, 1-3 → change metric */
   const handleNavSelect = (idx: number) => {
-    if (idx === 0) { setShowManualEntry(true); return }
-    if (idx === 4) { triggerCamera();          return }
+    if (idx === 0) { setPrefillEntry(null); setShowManualEntry(true); return }
+    if (idx === 4) { setShowFoodLibrary(true);                        return }
     setNavIdx(idx)
   }
 

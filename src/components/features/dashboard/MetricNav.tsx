@@ -13,7 +13,7 @@ const ITEMS: NavItem[] = [
   { kind: "metric", id: "protein", label: "蛋白質", color: "#6366FF" },
   { kind: "metric", id: "calories", label: "熱量", color: "#B6B9FE" },
   { kind: "metric", id: "carbs", label: "碳水化合物", color: "#BDF2DE" },
-  { kind: "action", id: "camera", label: "拍照", color: "#9E9E9E" },
+  { kind: "action", id: "library", label: "食物庫", color: "#9E9E9E" },
 ];
 
 const PlusIcon = () => (
@@ -31,7 +31,7 @@ const PlusIcon = () => (
   </svg>
 );
 
-const CameraIcon = () => (
+const LibraryIcon = () => (
   <svg
     width="22"
     height="22"
@@ -42,8 +42,12 @@ const CameraIcon = () => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-    <circle cx="12" cy="13" r="4" />
+    <line x1="8" y1="6" x2="21" y2="6" />
+    <line x1="8" y1="12" x2="21" y2="12" />
+    <line x1="8" y1="18" x2="21" y2="18" />
+    <line x1="3" y1="6" x2="3.01" y2="6" />
+    <line x1="3" y1="12" x2="3.01" y2="12" />
+    <line x1="3" y1="18" x2="3.01" y2="18" />
   </svg>
 );
 
@@ -113,7 +117,7 @@ export const MetricNav = ({ activeIdx, onSelect }: MetricNavProps) => {
                 item.id === "manual" ? (
                   <PlusIcon />
                 ) : (
-                  <CameraIcon />
+                  <LibraryIcon />
                 )
               ) : isActive ? (
                 <motion.span

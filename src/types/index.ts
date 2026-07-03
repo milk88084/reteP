@@ -17,6 +17,17 @@ export interface FoodEntry extends NutritionInfo {
   logged_at: string
 }
 
+/** A food-library item (backend GET /foods). Nutrition is per `serving_size`. */
+export interface Food extends NutritionInfo {
+  id: string
+  name: string
+  name_en?: string | null
+  category?: string | null
+  serving_size: string
+  owner_id?: string | null
+  source: string
+}
+
 export interface DailySummary {
   total_calories: number
   total_protein: number

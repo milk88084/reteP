@@ -1,4 +1,4 @@
-import { FoodEntry, DailyLog, DailySummary, RecognizeResponse, RecognizeApiResult, UserSettings } from '@/types'
+import { Food, FoodEntry, DailyLog, DailySummary, RecognizeResponse, RecognizeApiResult, UserSettings } from '@/types'
 import { MOCK_FOODS } from '@/constants'
 import { sumEntries } from '@/utils/nutritionCalc'
 import { newId } from '@/utils/id'
@@ -33,6 +33,28 @@ export const mockRecognizeFood = async (_file: File): Promise<RecognizeResponse>
     recognized_at: new Date().toISOString(),
   }
   return { success: true, data: result }
+}
+
+const MOCK_LIBRARY: Food[] = MOCK_FOODS.map((f, i) => ({
+  id: `mock-food-${i}`,
+  name: f.food_name,
+  name_en: f.food_name_en ?? null,
+  category: null,
+  calories: f.calories,
+  protein: f.protein,
+  carbs: f.carbs,
+  fat: f.fat,
+  fiber: f.fiber,
+  serving_size: f.serving_size,
+  owner_id: null,
+  source: 'system',
+}))
+
+export const mockSearchFoods = async (search?: string): Promise<Food[]> => {
+  await delay(200)
+  const q = search?.trim().toLowerCase()
+  if (!q) return MOCK_LIBRARY.slice(0, 50)
+  return MOCK_LIBRARY.filter((f) => f.name.toLowerCase().includes(q)).slice(0, 50)
 }
 
 export const mockGetLogs = async (date: string): Promise<DailyLog> => {

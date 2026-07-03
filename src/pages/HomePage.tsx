@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ParticleRing } from "@/components/features/dashboard/ParticleRing";
 import { ImagePreview } from "@/components/features/camera/ImagePreview";
 import { ManualEntryModal } from "@/components/features/food/ManualEntryModal";
+import { FoodLibraryModal } from "@/components/features/food/FoodLibraryModal";
 import { useCamera } from "@/hooks/useCamera";
 import { useFoodRecognition } from "@/hooks/useFoodRecognition";
 import { useFoodLogStore } from "@/store/foodLogStore";
@@ -12,6 +13,7 @@ import { getTodayStr } from "@/utils/dateUtils";
 import { formatNum } from "@/utils/nutritionCalc";
 import { FoodEntry, RecognizeApiResult } from "@/types";
 import { saveEntry } from "@/services/foodRecognitionApi";
+import { foodToPrefill } from "@/services/transform";
 
 const todayStr = getTodayStr();
 
@@ -25,8 +27,16 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
     useFoodRecognition();
   const { addEntry, getDailySummary } = useFoodLogStore();
   const { settings } = useSettingsStore();
-  const { showManualEntry, setShowManualEntry, pendingCamera, clearCamera } =
-    useUIStore();
+  const {
+    showManualEntry,
+    setShowManualEntry,
+    showFoodLibrary,
+    setShowFoodLibrary,
+    prefillEntry,
+    setPrefillEntry,
+    pendingCamera,
+    clearCamera,
+  } = useUIStore();
 
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,6 +80,12 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
       console.error("[saveEntry]", e),
     );
     setShowManualEntry(false);
+    setPrefillEntry(null);
+  };
+
+  const closeManualEntry = () => {
+    setShowManualEntry(false);
+    setPrefillEntry(null);
   };
 
   const summary = getDailySummary(todayStr);
@@ -180,8 +196,20 @@ export const HomePage = ({ navIdx }: HomePageProps) => {
 
       {showManualEntry && (
         <ManualEntryModal
+          prefill={prefillEntry ?? undefined}
           onConfirm={handleManualConfirm}
-          onClose={() => setShowManualEntry(false)}
+          onClose={closeManualEntry}
+        />
+      )}
+
+      {showFoodLibrary && (
+        <FoodLibraryModal
+          onSelect={(food) => {
+            setPrefillEntry(foodToPrefill(food));
+            setShowFoodLibrary(false);
+            setShowManualEntry(true);
+          }}
+          onClose={() => setShowFoodLibrary(false)}
         />
       )}
     </>

@@ -1,7 +1,8 @@
 import axios from 'axios'
-import { RecognizeResponse, DailyLog, FoodEntry, UserSettings } from '@/types'
+import { RecognizeResponse, DailyLog, Food, FoodEntry, UserSettings } from '@/types'
 import {
   mockRecognizeFood,
+  mockSearchFoods,
   mockGetLogs,
   mockGetLogsRange,
   mockSaveEntry,
@@ -59,6 +60,14 @@ export const recognizeFood = async (file: File, description?: string): Promise<R
       recognized_at: new Date().toISOString(),
     },
   }
+}
+
+// ── 食物庫搜尋（GET /foods）────────────────────────────────────────
+export const searchFoods = async (search?: string): Promise<Food[]> => {
+  if (USE_MOCK) return mockSearchFoods(search)
+  const params = search?.trim() ? { search: search.trim() } : undefined
+  const { data } = await apiClient.get<Food[]>('/foods', { params })
+  return data
 }
 
 // ── 資料層：全部改打後端 ────────────────────────────────────────────
