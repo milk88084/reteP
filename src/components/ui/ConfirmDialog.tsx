@@ -34,7 +34,11 @@ export const ConfirmDialog = ({
         className="w-full max-w-sm bg-bg rounded-3xl overflow-hidden shadow-xl"
       >
         <div className="px-6 pt-6 pb-5">
-          <p className="text-sm text-ink leading-relaxed text-center">{message}</p>
+          {/* whitespace-pre-line so multi-line messages keep their breaks;
+              single-line messages are unaffected. */}
+          <p className="text-sm text-ink leading-relaxed text-center whitespace-pre-line">
+            {message}
+          </p>
         </div>
 
         <div className="border-t border-border grid grid-cols-2">

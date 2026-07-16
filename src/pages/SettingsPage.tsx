@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, getDaysInMonth } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
+import { apiClient } from "@/lib/apiClient";
 import { useSettingsStore } from "@/store/settingsStore";
 import { useFoodLogStore } from "@/store/foodLogStore";
 import { Button } from "@/components/ui/Button";
@@ -588,6 +589,9 @@ export const SettingsPage = ({ onSaved }: SettingsPageProps) => {
   const [bodySaved, setBodySaved] = useState(false);
   const [goalsSaved, setGoalsSaved] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [infoSheet, setInfoSheet] = useState<InfoType | null>(null);
 
   const set = (key: keyof UserSettings) => (v: number | string) =>
@@ -644,6 +648,25 @@ export const SettingsPage = ({ onSaved }: SettingsPageProps) => {
       setGoalsSaved(false);
       onSaved?.();
     }, 1200);
+  };
+
+  // Apple Guideline 5.1.1(v) requires in-app account deletion; kept in sync
+  // with the iOS app so both clients hit the same endpoint.
+  const deleteAccount = async () => {
+    setShowDeleteConfirm(false);
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      // Must run before signOut — the request needs a valid session token.
+      await apiClient.delete("/account");
+      clearLogs({});
+      // The Clerk user no longer exists, so the cached session can never
+      // refresh; sign out to clear it and return to the login screen.
+      signOut();
+    } catch {
+      setDeleting(false);
+      setDeleteError("刪除帳號失敗，請稍後再試");
+    }
   };
 
   return (
@@ -783,6 +806,25 @@ export const SettingsPage = ({ onSaved }: SettingsPageProps) => {
         </div>
       </Accordion>
 
+      <div className="mt-8 flex flex-col items-center">
+        <Button
+          variant="danger"
+          loading={deleting}
+          onClick={() => setShowDeleteConfirm(true)}
+          className="w-full"
+        >
+          刪除帳號
+        </Button>
+        <p className="mt-2 text-center text-[10px] text-[#7A6F65]">
+          永久刪除你的帳號與所有飲食記錄，無法復原
+        </p>
+        {deleteError && (
+          <p className="mt-2 text-center text-xs text-[#ef4444]">
+            {deleteError}
+          </p>
+        )}
+      </div>
+
       {infoSheet && (
         <InfoSheet type={infoSheet} onClose={() => setInfoSheet(null)} />
       )}
@@ -798,6 +840,19 @@ export const SettingsPage = ({ onSaved }: SettingsPageProps) => {
             signOut();
           }}
           onCancel={() => setShowSignOutConfirm(false)}
+        />
+      )}
+
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          message={
+            "確定要刪除帳號嗎？\n\n你的所有飲食記錄、每日目標與自訂食物都會被永久刪除，此操作無法復原。"
+          }
+          confirmLabel="永久刪除"
+          cancelLabel="取消"
+          danger
+          onConfirm={deleteAccount}
+          onCancel={() => setShowDeleteConfirm(false)}
         />
       )}
     </div>
