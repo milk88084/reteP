@@ -1,4 +1,4 @@
-const LAST_UPDATED = '2026 年 7 月 8 日'
+const LAST_UPDATED = '2026 年 7 月 17 日'
 const CONTACT_EMAIL = 'milk88084@gmail.com'
 
 export const PrivacyPage = () => (
@@ -67,7 +67,8 @@ export const PrivacyPage = () => (
     <Section title="6. 資料保留與刪除">
       <p>
         我們在您使用本服務期間保留您的資料。您可以隨時在「歷史」頁面刪除您記錄的任一筆飲食資料。
-        若您希望刪除整個帳號及其關聯的所有資料，請透過下方電子郵件與我們聯繫，我們將在合理期間內處理。
+        若您希望刪除整個帳號及其關聯的所有資料，請前往「設定」頁面，捲動至頁面底部並點選「刪除帳號」。
+        您的帳號、所有飲食記錄、每日目標與自訂食物都會被立即永久刪除，此操作無法復原。
       </p>
     </Section>
 
