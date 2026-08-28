@@ -8,3 +8,6 @@ dist
 commands/
 skills/
 .playwright-mcp/
+
+# 過期的 Expo 骨架；正式 iOS App 在獨立的 reteP-mobile repo
+mobile/
