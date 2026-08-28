@@ -18,7 +18,7 @@ export const SupportPage = () => (
 
     <Section title="常見問題">
       <h3 className="mt-4 font-semibold">如何登入？</h3>
-      <p>reteP 透過 Google 帳號一鍵登入，你不需要另外設定密碼。</p>
+      <p>reteP 透過 Apple 或 Google 帳號一鍵登入，你不需要另外設定密碼。</p>
 
       <h3 className="mt-4 font-semibold">我的資料安全嗎？</h3>
       <p>

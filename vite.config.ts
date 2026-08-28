@@ -12,7 +12,7 @@ export default defineConfig({
       manifest: {
         name: "每日飲食記錄",
         short_name: "飲食記錄",
-        description: "拍一張，記下來。記錄每日飲食熱量與營養。",
+        description: "記錄每一餐的熱量與蛋白質、碳水、脂肪，內建食物庫與營養推薦。",
         theme_color: "#BDF2DE",
         background_color: "#FAFAF7",
         display: "standalone",
