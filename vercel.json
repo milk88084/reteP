@@ -14,7 +14,11 @@
       ]
     },
     {
-      "source": "/(login|sso-callback)/?",
+      "source": "/login",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+    },
+    {
+      "source": "/sso-callback",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
     }
   ],
