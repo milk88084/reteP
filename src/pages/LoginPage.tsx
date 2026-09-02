@@ -1,6 +1,7 @@
 import { useSignIn } from "@clerk/clerk-react";
 import { useEffect, useRef, useState } from "react";
 import { ParticleRing } from "@/components/features/dashboard/ParticleRing";
+import { Seo } from "@/components/seo/Seo";
 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 18 18">
@@ -56,6 +57,7 @@ export const LoginPage = () => {
           "radial-gradient(circle at 50% 50%, #1a0d08 0%, #0a0705 65%, #B6B9FE 100%)",
       }}
     >
+      <Seo title="登入｜reteP" description="登入 reteP。" path="/login" noindex />
       <div className="absolute inset-0 flex items-center justify-center">
         <ParticleRing
           progress={progress}

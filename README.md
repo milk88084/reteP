@@ -114,6 +114,7 @@ npm run dev
 | `VITE_API_BASE_URL`          | 後端 API：本機 `http://localhost:8000`，正式填 Zeabur 網址 | ✓                          |
 | `VITE_AI_WEBHOOK_URL`        | n8n 拍照辨識 webhook 的 URL                              | 選填                       |
 | `VITE_USE_MOCK`              | 設 `true` 全程用假資料，不打任何外部服務                 | 選填                       |
+| `VITE_GA_MEASUREMENT_ID`     | GA4 Measurement ID（`G-XXXXXXXXXX`）；留空則不載入 GA    | 選填                       |
 
 > `.env.local` 已被 `.gitignore` 排除，請勿 commit。
 
@@ -168,6 +169,76 @@ master ──► feature/*  ──/create-pr──►  develop  ──merge─�
   fallback 到 mock**，不報錯 —— 「拍照辨識都出假資料」通常就是 webhook 沒設。
 - **同一個 email 的不同登入方式會共用帳號。** Clerk 會把 verified email 相同的
   provider 合併成同一個 `userId`。這是設計如此，不是資料外洩。
+- **公開頁的 HTML 是 build 時預渲染出來的。** `scripts/prerender.mjs` 在 `vite build`
+  後用 headless Chromium 跑 `/`、`/support`、`/privacy`，把渲染完的 HTML 覆寫回
+  `dist/*.html`。改公開頁的內容後要重跑 `npm run build` 才會更新那份 HTML。
+  緊急關閉：Vercel 環境變數設 `PRERENDER=false`（或本機 `npm run build:spa`）→
+  退回純 SPA，SEO 標籤會少掉，但站台照常運作。
+- **`react-helmet-async` 已停止維護（最後發布 2022）。** 目前用它管理每頁的
+  `<title>` / meta / canonical。若哪天壞掉，退路是改成自寫的 `document.head` 操作 hook，
+  並讓 `prerender.mjs` 在擷取前 `waitForFunction` 確認 head 已更新。
+- **`index.html` 的靜態 `<head>` 只留與路由無關的東西**（charset、theme-color、
+  字型、icon、網站級 JSON-LD）。title / description / og / twitter / canonical 一律由
+  `<Seo>`（`src/components/seo/Seo.tsx`）輸出，重複放在 `index.html` 會產生兩份 meta。
+
+---
+
+## Analytics（GA4）
+
+`src/lib/analytics.ts` 是唯一的 GA 介面，三個函式：
+
+| 函式 | 用途 |
+| --- | --- |
+| `initGA()` | 動態注入 gtag script（`async`）。未設 `VITE_GA_MEASUREMENT_ID` 或非瀏覽器環境 → no-op，不報錯。 |
+| `trackPageView(pathAndQuery)` | 送一筆 `page_view`。**一律** `sanitizePath` 去掉 query string，`page_path` 永不含 `?…`（含 Clerk ticket）。 |
+| `trackEvent(name, params)` | 送自訂事件。未設 ID → no-op。 |
+
+- **SPA page_view**：`gtag('config', …, { send_page_view: false })` 關掉自動送；改由 `src/hooks/usePageViews.ts` 的 `trackRouterPageViews()` 監聽 `router.subscribe()`，每次導航 settle（`navigation.state === 'idle'`）送一筆。`usePageViews()` 掛在 `App`。
+- **隱私**：登入後路徑（`/home`、`/history`、`/settings`）也只送 pathname，不送 query、不送使用者參數。
+- **Consent**：專案目前無 cookie / consent 機制，`initGA()` 內有 `TODO(consent)` 註記接法（同意前 bail，或 `gtag('consent', 'default', …)`）。
+- 本機驗證：`.env.local` 設 `VITE_GA_MEASUREMENT_ID=G-XXXX` → DevTools Network 面板在路由切換時可見對 `google-analytics.com/g/collect` 的請求、`dp` 不含 `?`。不設變數則完全沒有 `googletagmanager` 請求。
+
+---
+
+## SEO / Search Console
+
+### 每頁 meta
+
+`src/components/seo/Seo.tsx`（`react-helmet-async`）負責每個公開路由的
+`<title>` / `description` / `canonical`（絕對網址）/ Open Graph / Twitter card。
+`canonical` 與 `og:url` 由 `src/constants/site.ts` 的 `canonicalUrl()` 產生，
+`SITE_URL = https://rete-p.vercel.app`。OG 圖是 `public/og-cover.png`（1200×630）。
+
+`/login`、`/sso-callback` 由 `<Seo noindex>` 加 `robots: noindex, nofollow`，
+`vercel.json` 另對這兩條路徑加 `X-Robots-Tag: noindex` 標頭作雙保險。
+
+### robots / sitemap
+
+- `public/robots.txt`：allow all，指向 `https://rete-p.vercel.app/sitemap.xml`。
+- `public/sitemap.xml`：列 `/`、`/support`、`/privacy`，`<lastmod>` 對齊
+  `src/constants/site.ts` 的 `LAST_UPDATED`。**新增公開頁時三處都要更新**
+  （`PUBLIC_ROUTES`、`LAST_UPDATED`、`sitemap.xml`）。
+
+### 安全標頭
+
+`vercel.json` 的 `headers`：`X-Content-Type-Options: nosniff`、
+`Referrer-Policy: strict-origin-when-cross-origin`、`X-Frame-Options: SAMEORIGIN`，
+以及 **`Content-Security-Policy-Report-Only`**（先觀察、不阻擋）。CSP allowlist 已含
+Clerk（`*.clerk.accounts.dev`、Cloudflare Turnstile）、GA（`googletagmanager.com`、
+`google-analytics.com`）、Google Fonts、後端 `retep-backend.zeabur.app`、n8n。
+觀察數日 Vercel 沒有 CSP 違規回報後，另開一次 commit 把標頭改成強制的
+`Content-Security-Policy`（同時 `img-src` 收斂為 `'self' data: https://rete-p.vercel.app`、
+`script-src` 移除 `'unsafe-inline'` 改用 hash）。
+
+### 在 Google Search Console 驗證與提交（你本人操作）
+
+1. **驗證網域**：Search Console → 「新增資源」→ 選「網域」→ 依指示到網域 DNS
+   （Vercel DNS 或網域商）加一筆 `TXT` 記錄 → 回 Search Console 按驗證。
+   （或選「網址前置字元」`https://rete-p.vercel.app` → 用 HTML 標記法，把
+   `<meta name="google-site-verification" content="…">` 加進 `index.html` 靜態 `<head>`。）
+2. **提交 sitemap**：Search Console →「Sitemap」→ 輸入 `sitemap.xml` → 提交。
+3. **請求索引**：用「網址檢查」貼上 `https://rete-p.vercel.app/` → 「要求建立索引」。
+4. 索引需數天至數週。用 `site:rete-p.vercel.app` 查目前收錄狀態。
 
 ---
 

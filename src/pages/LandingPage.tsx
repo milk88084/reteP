@@ -1,15 +1,22 @@
 import { type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, MotionConfig, type Variants } from 'framer-motion'
+import { APP_STORE_URL } from '@/constants/site'
+import { Seo } from '@/components/seo/Seo'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { faqPageSchema } from '@/lib/schema'
 
 /* -------------------------------------------------------------------------- */
 /*  Config                                                                     */
 /* -------------------------------------------------------------------------- */
 
-const APP_STORE_URL = 'https://apps.apple.com/tw/app/id6798490139'
 const SUPPORT_HREF = '/support'
 const PRIVACY_HREF = '/privacy'
 const WORDMARK: CSSProperties = { fontFamily: "'Bitcount Prop Single', cursive", fontWeight: 300 }
+
+// Evaluated once at module load so the prerendered HTML and the hydrating client
+// agree on the value (avoids a hydration mismatch on the footer).
+const YEAR = new Date().getFullYear()
 
 // App Store 行銷截圖（1242×2688，已含大標與手機外框）。放到 public/landing/ 後自動顯示。
 const SHOTS = [
@@ -121,12 +128,19 @@ function GalleryShot({ src, index }: { src: string; index: number }) {
 
 export const LandingPage = () => (
   <MotionConfig reducedMotion="user">
-    <div className="min-h-screen overflow-x-hidden bg-bg text-ink">
+    <Seo
+      title="reteP｜記錄每天的飲食熱量與營養"
+      description="記錄每一餐，追蹤熱量與蛋白質、碳水、脂肪。內建食物庫與營養推薦，用月曆逐日回顧、年度圖表看趨勢。Apple、Google 一鍵登入的 iOS 飲食日記。"
+      path="/"
+    />
+    <JsonLd data={faqPageSchema(FAQ_ITEMS)} />
+    <div className="min-h-screen overflow-x-hidden bg-bg text-ink" data-prerender-ready>
       <NavBar />
       <main>
         <Hero />
         <Showcase />
         <Highlights />
+        <Faq />
         <CtaBand />
       </main>
       <Footer />
@@ -345,6 +359,64 @@ const Highlights = () => (
   </section>
 )
 
+/* --------------------------------- FAQ ---------------------------------- */
+
+// Self-contained Q&A (each answer 130–170 characters, no reliance on prior text)
+// so AI answer engines can quote a single block. Also feeds the FAQPage JSON-LD.
+export const FAQ_ITEMS: { q: string; a: string }[] = [
+  {
+    q: 'reteP 是什麼？',
+    a: 'reteP 是一款 iOS 飲食記錄 App，登入後也有網頁版。你用它記下每一餐吃了什麼、份量多少，它會統計當天的熱量與蛋白質、碳水化合物、脂肪，並以圓環顯示距離每日目標的進度。App 內建上百筆常見食物，能依你的身高體重推算每日目標，還會分析當天攝取、指出最缺的營養並建議可以補的食物。適合想長期追蹤飲食、控制體重或調整營養比例的人。',
+  },
+  {
+    q: '怎麼用 reteP 記錄一餐？',
+    a: '在首頁選擇早餐、午餐、晚餐或點心，接著從內建食物庫挑選，或手動輸入食物名稱與份量。選定後 App 會自動帶入該食物的熱量與蛋白質、碳水、脂肪數值，你也可以直接微調。記錄過的食物之後再輸入時，會自動帶出上次的數值，不必每次重打。整天的紀錄會累加到當日總量，並反映在首頁的營養圓環與今日營養推薦上。',
+  },
+  {
+    q: 'reteP 支援哪些登入方式？',
+    a: 'reteP 透過 Clerk 提供 Apple 與 Google 帳號一鍵登入，你不需要另外設定或記住密碼。使用 Apple 或 Google 登入時，reteP 只會收到你的電子郵件、顯示名稱與帳號識別碼，不會取得你的第三方帳號密碼。若你用相同且已驗證的電子郵件從不同管道登入，系統會視為同一個帳號，這是刻意的設計，不是資料外洩。',
+  },
+  {
+    q: '我的飲食資料存在哪裡？',
+    a: 'reteP 的前端不直接連資料庫，而是帶著你的登入憑證呼叫後端 API，資料儲存在受存取控制保護的雲端資料庫。每一筆查詢都以你的帳號識別碼隔離，只有你本人能存取自己的紀錄；傳輸全程使用 HTTPS 加密。你的資料不會用於廣告追蹤，也不會被販售。你可以隨時在歷史頁刪除單筆紀錄，或在設定頁刪除整個帳號與所有資料。',
+  },
+  {
+    q: '使用 reteP 需要付費嗎？',
+    a: 'reteP 在 App Store 上完全免費下載，所有記錄、統計、月曆回顧、年度趨勢與營養推薦功能都免費使用，目前沒有訂閱制，也沒有任何內購項目。登入後的網頁版同樣免費，與 iOS App 共用同一組帳號與資料。若未來有付費項目的調整，會在這裡與 App Store 頁面更新說明。',
+  },
+]
+
+const Faq = () => (
+  <section className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-28">
+    <motion.h2
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="show"
+      viewport={inView}
+      className="text-center text-3xl font-bold tracking-tight sm:text-4xl"
+    >
+      關於 reteP，常見的問題
+    </motion.h2>
+
+    <motion.div
+      variants={stagger}
+      initial="hidden"
+      whileInView="show"
+      viewport={inView}
+      className="mt-12 space-y-8"
+    >
+      {FAQ_ITEMS.map((item) => (
+        <motion.div key={item.q} variants={fadeUp}>
+          <h3 className="text-lg font-bold text-ink">{item.q}</h3>
+          <p className="mt-2 text-[15px] leading-relaxed text-ink-muted" data-speakable>
+            {item.a}
+          </p>
+        </motion.div>
+      ))}
+    </motion.div>
+  </section>
+)
+
 /* ------------------------------ CTA band ---------------------------------- */
 
 const CtaBand = () => (
@@ -389,13 +461,16 @@ const Footer = () => (
         <span className="text-sm text-ink-muted">紀錄你的飲食習慣</span>
       </div>
       <div className="flex items-center gap-5 text-sm text-ink-muted">
+        <Link to="/about" className="transition-colors hover:text-ink">
+          關於
+        </Link>
         <Link to={SUPPORT_HREF} className="transition-colors hover:text-ink">
           支援
         </Link>
         <Link to={PRIVACY_HREF} className="transition-colors hover:text-ink">
           隱私政策
         </Link>
-        <span className="text-ink-muted/60">© {new Date().getFullYear()} reteP</span>
+        <span className="text-ink-muted/60">© {YEAR} reteP</span>
       </div>
     </div>
   </footer>

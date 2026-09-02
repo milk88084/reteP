@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
@@ -10,9 +11,11 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["icons/*.png", "favicon.ico"],
       manifest: {
-        name: "每日飲食記錄",
-        short_name: "飲食記錄",
-        description: "記錄每一餐的熱量與蛋白質、碳水、脂肪，內建食物庫與營養推薦。",
+        name: "reteP",
+        short_name: "reteP",
+        lang: "zh-Hant",
+        description:
+          "記錄每一餐，追蹤熱量與蛋白質、碳水、脂肪。內建食物庫與營養推薦，用月曆逐日回顧、年度圖表看趨勢。",
         theme_color: "#BDF2DE",
         background_color: "#FAFAF7",
         display: "standalone",
@@ -54,6 +57,11 @@ export default defineConfig({
   ],
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
+  },
+  test: {
+    environment: "jsdom",
+    restoreMocks: true,
+    unstubEnvs: true,
   },
   server: {
     proxy: {
