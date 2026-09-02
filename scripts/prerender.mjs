@@ -54,14 +54,29 @@ function assertRendered(route, html) {
   }
 }
 
+// Launching headless Chromium / binding the preview server can fail in a build
+// sandbox (missing system libs, no browser binary). That is an environment
+// limitation, not a code regression, so degrade to the plain SPA build (exit 0)
+// — helmet still injects per-route <head> client-side and the static index.html
+// JSON-LD, robots.txt, sitemap.xml, headers all still ship.
 let server
 let browser
 try {
+  browser = await chromium.launch()
   server = await preview({ preview: { port: 0 }, logLevel: 'warn' })
+} catch (err) {
+  console.warn(
+    '[prerender] cannot prerender in this environment (browser/preview launch failed) — shipping plain SPA build.',
+  )
+  console.warn('[prerender]', err instanceof Error ? err.message : String(err))
+  await browser?.close().catch(() => {})
+  process.exit(0)
+}
+
+// From here on, a failure means a genuinely broken page — fail the build (exit 1).
+try {
   const base = server.resolvedUrls?.local?.[0]?.replace(/\/$/, '')
   if (!base) throw new Error('[prerender] could not resolve preview server URL')
-
-  browser = await chromium.launch()
 
   // Fetch every route first, then write — so writing dist/index.html can't change
   // what the SPA fallback serves for a route fetched later.
