@@ -37,8 +37,6 @@
     <!--
       Site-wide structured data. Static (no JS needed) and the single source for
       these types — <Seo> never emits Organization / SoftwareApplication / WebSite.
-      TODO(rating): add aggregateRating to SoftwareApplication once App Store
-      ratingValue + ratingCount are available.
     -->
     <script type="application/ld+json">
       {
@@ -71,7 +69,14 @@
             "url": "https://apps.apple.com/tw/app/id6798490139",
             "inLanguage": "zh-Hant",
             "creator": { "@type": "Person", "name": "KO CHUAN LI" },
-            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TWD" }
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TWD" },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "5",
+              "ratingCount": "1",
+              "bestRating": "5",
+              "worstRating": "1"
+            }
           }
         ]
       }
