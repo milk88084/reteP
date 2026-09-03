@@ -9,9 +9,10 @@
  * Disable with `PRERENDER=false` (e.g. a Vercel env var) — `dist/` then stays a
  * plain SPA build and the `vercel.json` rewrite serves index.html for everything.
  */
-import { writeFile, readFile } from 'node:fs/promises'
+import { writeFile, readFile, mkdir } from 'node:fs/promises'
+import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { execFileSync } from 'node:child_process'
+import { execSync } from 'node:child_process'
 import { preview } from 'vite'
 import { chromium } from 'playwright'
 
@@ -20,23 +21,34 @@ if (process.env.PRERENDER === 'false') {
   process.exit(0)
 }
 
-// CI/Vercel installs the `playwright` package but not the browser binary; this is
-// a no-op once the binary is present. Skip with PRERENDER_SKIP_INSTALL=1 locally.
+// A CI/Vercel build has the `playwright` package but may lack the browser binary
+// and/or its system libraries. Try with OS deps first (works as root on Vercel),
+// then without. No-op once everything is present. Skip locally with
+// PRERENDER_SKIP_INSTALL=1.
 if (process.env.PRERENDER_SKIP_INSTALL !== '1') {
-  try {
-    execFileSync('npx', ['playwright', 'install', 'chromium'], { stdio: 'inherit', shell: true })
-  } catch {
-    console.warn('[prerender] "playwright install chromium" failed; continuing (binary may already exist)')
+  const cmds = [
+    'npx --yes playwright install --with-deps chromium',
+    'npx --yes playwright install chromium',
+  ]
+  for (const cmd of cmds) {
+    try {
+      execSync(cmd, { stdio: 'inherit' })
+      break
+    } catch {
+      console.warn(`[prerender] "${cmd}" failed`)
+    }
   }
 }
 
 // Keep in sync with PUBLIC_ROUTES in src/constants/site.ts.
-// Maps route -> output file relative to dist/.
+// Maps route -> output file relative to dist/. Sub-routes use <route>/index.html
+// so Vercel serves them at the clean path with no cleanUrls redirect needed;
+// when prerender is skipped the files are simply absent and the SPA rewrite runs.
 const ROUTES = {
   '/': 'index.html',
-  '/support': 'support.html',
-  '/privacy': 'privacy.html',
-  '/about': 'about.html',
+  '/support': 'support/index.html',
+  '/privacy': 'privacy/index.html',
+  '/about': 'about/index.html',
 }
 
 const SITE_URL = 'https://rete-p.vercel.app'
@@ -107,6 +119,7 @@ try {
 
   for (const [route, file] of Object.entries(ROUTES)) {
     const out = `${distDir}/${file}`
+    await mkdir(dirname(out), { recursive: true })
     await writeFile(out, rendered[route], 'utf8')
     assertRendered(route, await readFile(out, 'utf8'))
     console.log(`[prerender] wrote dist/${file}`)
