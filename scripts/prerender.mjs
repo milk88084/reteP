@@ -14,30 +14,39 @@ import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execSync } from 'node:child_process'
 import { preview } from 'vite'
-import { chromium } from 'playwright'
 
 if (process.env.PRERENDER === 'false') {
   console.log('[prerender] skipped (PRERENDER=false)')
   process.exit(0)
 }
 
-// A CI/Vercel build has the `playwright` package but may lack the browser binary
-// and/or its system libraries. Try with OS deps first (works as root on Vercel),
-// then without. No-op once everything is present. Skip locally with
-// PRERENDER_SKIP_INSTALL=1.
-if (process.env.PRERENDER_SKIP_INSTALL !== '1') {
-  const cmds = [
-    'npx --yes playwright install --with-deps chromium',
-    'npx --yes playwright install chromium',
-  ]
-  for (const cmd of cmds) {
+const ON_VERCEL = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME
+
+/**
+ * Vercel's build image (Amazon Linux) is missing Chromium's shared libraries
+ * (libnspr4/libnss3/...) and Playwright's `--with-deps` is apt-only, so there we
+ * use @sparticuz/chromium, a Chromium build with the libs bundled, driven by
+ * playwright-core. Locally we use the full `playwright` package + its own binary.
+ */
+async function launchBrowser() {
+  if (ON_VERCEL) {
+    const sparticuz = (await import('@sparticuz/chromium')).default
+    const { chromium } = await import('playwright-core')
+    return chromium.launch({
+      args: sparticuz.args,
+      executablePath: await sparticuz.executablePath(),
+      headless: true,
+    })
+  }
+  if (process.env.PRERENDER_SKIP_INSTALL !== '1') {
     try {
-      execSync(cmd, { stdio: 'inherit' })
-      break
+      execSync('npx --yes playwright install chromium', { stdio: 'inherit' })
     } catch {
-      console.warn(`[prerender] "${cmd}" failed`)
+      console.warn('[prerender] "playwright install chromium" failed; continuing')
     }
   }
+  const { chromium } = await import('playwright')
+  return chromium.launch()
 }
 
 // Keep in sync with PUBLIC_ROUTES in src/constants/site.ts.
@@ -74,7 +83,7 @@ function assertRendered(route, html) {
 let server
 let browser
 try {
-  browser = await chromium.launch()
+  browser = await launchBrowser()
   server = await preview({ preview: { port: 0 }, logLevel: 'warn' })
 } catch (err) {
   console.warn(
