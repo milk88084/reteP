@@ -6,12 +6,12 @@
 
     <!--
       Per-page SEO tags (title, description, canonical, Open Graph, Twitter) are
-      owned by <Seo> (react-helmet-async) and baked into each public route at
-      build time by scripts/prerender.mjs. Keeping them here too would duplicate
-      the <meta> tags, so this static head carries only route-agnostic essentials.
-      The <title> below is a pre-JS fallback; helmet replaces it in place.
+      owned by Seo (react-helmet-async). scripts/prerender.mjs removes the static
+      title below and injects the route's helmet tags at the app-head placeholder
+      comment. On a PRERENDER=false build the static title stays as a fallback.
     -->
     <title>reteP｜記錄每天的飲食熱量與營養</title>
+    <!--app-head-->
     <meta name="author" content="reteP" />
 
     <!-- Theme -->

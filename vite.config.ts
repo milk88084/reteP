@@ -58,6 +58,11 @@ export default defineConfig({
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
   },
+  // scripts/prerender.mjs SSR-loads src/prerender-entry.tsx; react-helmet-async is
+  // CJS and needs Vite's interop for its named exports under ssrLoadModule.
+  ssr: {
+    noExternal: ["react-helmet-async"],
+  },
   test: {
     environment: "jsdom",
     restoreMocks: true,
