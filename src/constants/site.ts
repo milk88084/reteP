@@ -8,10 +8,10 @@ export const SITE_URL = 'https://rete-p.vercel.app'
 export const SITE_NAME = 'reteP'
 export const APP_STORE_URL = 'https://apps.apple.com/tw/app/id6798490139'
 export const CONTACT_EMAIL = 'milk88084@gmail.com'
-export const DEVELOPER_NAME = 'KO CHUAN LI'
+export const DEVELOPER_NAME = 'Li KO CHUAN'
 
-/** 1200×630 Open Graph image, absolute URL. */
-export const OG_IMAGE = `${SITE_URL}/og-cover.png`
+/** Open Graph share image, absolute URL. */
+export const OG_IMAGE = `${SITE_URL}/og-cover.jpg`
 
 /** Routes rendered at build time (scripts/prerender.mjs) and listed in sitemap.xml. */
 export const PUBLIC_ROUTES = ['/', '/support', '/privacy', '/about'] as const

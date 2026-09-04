@@ -50,7 +50,7 @@ describe('Seo', () => {
     const { meta } = head(<Seo title="t" description="d" path="/" />)
     expect(meta).toContain('property="og:image"')
     expect(meta).toContain('name="twitter:image"')
-    const matches = meta.match(/https:\/\/rete-p\.vercel\.app\/og-cover\.png/g) ?? []
+    const matches = meta.match(/https:\/\/rete-p\.vercel\.app\/og-cover\.jpg/g) ?? []
     expect(matches.length).toBeGreaterThanOrEqual(2)
   })
 
