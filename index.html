@@ -4,33 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- Primary Meta -->
-    <title>reteP｜拍一張，記下來</title>
-    <meta name="description" content="拍一張照片，AI 自動辨識食物熱量與蛋白質、碳水、脂肪。最輕量的 iOS 飲食日記 PWA。" />
-    <meta name="keywords" content="飲食記錄, 熱量計算, 蛋白質, 碳水化合物, 減重, 飲食日記, 食物辨識, PWA, iOS" />
-    <meta name="robots" content="index, follow" />
+    <!--
+      Per-page SEO tags (title, description, canonical, Open Graph, Twitter) are
+      owned by Seo (react-helmet-async). scripts/prerender.mjs removes the static
+      title below and injects the route's helmet tags at the app-head placeholder
+      comment. On a PRERENDER=false build the static title stays as a fallback.
+    -->
+    <title>reteP｜記錄每天的飲食熱量與營養</title>
+    <!--app-head-->
     <meta name="author" content="reteP" />
 
     <!-- Theme -->
-    <meta name="theme-color" content="#0D0B09" />
+    <meta name="theme-color" content="#BDF2DE" />
 
     <!-- PWA / Apple -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="reteP" />
-
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="reteP｜拍一張，記下來" />
-    <meta property="og:description" content="拍一張照片，AI 自動辨識食物熱量與蛋白質、碳水、脂肪。最輕量的 iOS 飲食日記 PWA。" />
-    <meta property="og:image" content="/icons/icon-512.png" />
-    <meta property="og:locale" content="zh_TW" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="reteP｜拍一張，記下來" />
-    <meta name="twitter:description" content="拍一張照片，AI 自動辨識食物熱量與蛋白質、碳水、脂肪。最輕量的 iOS 飲食日記 PWA。" />
-    <meta name="twitter:image" content="/icons/icon-512.png" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -43,6 +33,55 @@
     <!-- Icons -->
     <link rel="icon" href="/favicon.png" sizes="any" />
     <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+
+    <!--
+      Site-wide structured data. Static (no JS needed) and the single source for
+      these types — <Seo> never emits Organization / SoftwareApplication / WebSite.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://rete-p.vercel.app/#organization",
+            "name": "reteP",
+            "url": "https://rete-p.vercel.app/",
+            "logo": "https://rete-p.vercel.app/icons/icon-512.png",
+            "email": "milk88084@gmail.com",
+            "founder": { "@type": "Person", "name": "Li KO CHUAN" },
+            "sameAs": ["https://apps.apple.com/tw/app/id6798490139"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://rete-p.vercel.app/#website",
+            "name": "reteP",
+            "url": "https://rete-p.vercel.app/",
+            "inLanguage": "zh-Hant",
+            "publisher": { "@id": "https://rete-p.vercel.app/#organization" }
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://rete-p.vercel.app/#app",
+            "name": "reteP｜飲食熱量紀錄",
+            "alternateName": "Calorie Record",
+            "applicationCategory": "HealthApplication",
+            "operatingSystem": "iOS, iPadOS",
+            "url": "https://apps.apple.com/tw/app/id6798490139",
+            "inLanguage": "zh-Hant",
+            "creator": { "@type": "Person", "name": "Li KO CHUAN" },
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TWD" },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "5",
+              "ratingCount": "1",
+              "bestRating": "5",
+              "worstRating": "1"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -9,11 +9,20 @@ const Spinner = () => (
   </div>
 )
 
+/** Synchronous hint that a Clerk session likely exists (cookie set, not signed out). */
+const hasClerkSession = (): boolean => {
+  if (typeof document === 'undefined') return false
+  return document.cookie.split('; ').some((c) => {
+    const [key, value] = c.split('=')
+    return (key === '__client_uat' && value !== '0') || key === '__session'
+  })
+}
+
 /** `/` — landing page for signed-out visitors, the app itself for signed-in users. */
 export const RootRoute = () => {
   const { isLoaded, isSignedIn } = useAuth()
 
-  switch (resolveRootRoute(isLoaded, isSignedIn)) {
+  switch (resolveRootRoute(isLoaded, isSignedIn, hasClerkSession())) {
     case 'loading':
       return <Spinner />
     case 'app':

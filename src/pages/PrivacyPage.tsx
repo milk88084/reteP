@@ -1,10 +1,24 @@
-const LAST_UPDATED = '2026 年 7 月 17 日'
-const CONTACT_EMAIL = 'milk88084@gmail.com'
+import { CONTACT_EMAIL, LAST_UPDATED, formatUpdated } from '@/constants/site'
+import { Seo } from '@/components/seo/Seo'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { webPageSchema } from '@/lib/schema'
+
+const LAST_UPDATED_LABEL = formatUpdated(LAST_UPDATED['/privacy'])
 
 export const PrivacyPage = () => (
-  <main className="mx-auto min-h-screen max-w-2xl bg-white px-6 py-12 text-[#1c1c1e]">
+  <main
+    className="mx-auto min-h-screen max-w-2xl bg-white px-6 py-12 text-[#1c1c1e]"
+    data-prerender-ready
+  >
+    <Seo
+      title="隱私權政策｜reteP"
+      description="reteP 如何蒐集、使用與保護你的資料，以及你的存取、更正與刪除權利。"
+      path="/privacy"
+      type="article"
+    />
+    <JsonLd data={webPageSchema({ path: '/privacy', name: '隱私權政策｜reteP' })} />
     <h1 className="text-3xl font-bold tracking-tight">隱私權政策</h1>
-    <p className="mt-2 text-sm text-neutral-500">最後更新日期：{LAST_UPDATED}</p>
+    <p className="mt-2 text-sm text-neutral-500">最後更新日期：{LAST_UPDATED_LABEL}</p>
 
     <Section title="1. 前言">
       <p>
@@ -17,7 +31,7 @@ export const PrivacyPage = () => (
     <Section title="2. 我們蒐集的資料">
       <h3 className="mt-4 font-semibold">2.1 帳號與身分資料</h3>
       <p>
-        本服務使用第三方驗證服務 Clerk 進行登入。當您透過 Google 登入時，我們會接收並儲存您的電子郵件地址、
+        本服務使用第三方驗證服務 Clerk 進行登入。當您透過 Google 或 Apple 登入時，我們會接收並儲存您的電子郵件地址、
         顯示名稱與帳號識別碼，用以建立並識別您的帳號。我們<strong>不會</strong>取得或儲存您的第三方帳號密碼。
       </p>
       <h3 className="mt-4 font-semibold">2.2 您建立的飲食資料</h3>
@@ -48,7 +62,7 @@ export const PrivacyPage = () => (
       <p>本服務仰賴下列第三方服務以維持運作：</p>
       <ul className="mt-2 list-disc space-y-1 pl-5">
         <li>
-          <strong>Clerk</strong>：提供身分驗證與帳號管理（Google 登入）。
+          <strong>Clerk</strong>：提供身分驗證與帳號管理（Google、Apple 登入）。
         </li>
         <li>
           <strong>後端資料庫服務</strong>：安全儲存您的帳號、飲食記錄與設定資料。
@@ -58,14 +72,14 @@ export const PrivacyPage = () => (
     </Section>
 
     <Section title="5. 資料儲存與安全">
-      <p>
+      <p data-speakable>
         您的資料儲存於受存取控制保護的雲端資料庫，傳輸過程以 HTTPS 加密。每一筆查詢都以您的帳號識別碼進行隔離，
         確保您只能存取自己的資料。儘管我們採取合理的技術與管理措施保護您的資料，但沒有任何網路傳輸或儲存方式能保證百分之百安全。
       </p>
     </Section>
 
     <Section title="6. 資料保留與刪除">
-      <p>
+      <p data-speakable>
         我們在您使用本服務期間保留您的資料。您可以隨時在「歷史」頁面刪除您記錄的任一筆飲食資料。
         若您希望刪除整個帳號及其關聯的所有資料，請前往「設定」頁面，捲動至頁面底部並點選「刪除帳號」。
         您的帳號、所有飲食記錄、每日目標與自訂食物都會被立即永久刪除，此操作無法復原。
