@@ -28,8 +28,9 @@ export const AboutPage = () => (
     <h1 className="text-3xl font-bold tracking-tight">關於 reteP</h1>
     <p className="mt-2 text-sm text-neutral-500">最後更新日期：{LAST_UPDATED_LABEL}</p>
     <p className="mt-4 leading-relaxed text-neutral-700">
-      reteP 是一款 iOS 飲食記錄 App，協助你記下每一餐、追蹤熱量與蛋白質、碳水、脂肪，
-      並用月曆與年度圖表回顧變化。登入後，同一個網站也提供功能相同的網頁版。
+      reteP 是一款 iPhone、iPad 飲食記錄 App，協助你記下每一餐、追蹤熱量與蛋白質、
+      碳水、脂肪、纖維，並用日曆、月度與年度圖表回顧變化。內建食物庫以衛福部食品營養
+      成分資料庫的開放資料為基礎。登入後，同一個網站也提供功能相同的網頁版。
     </p>
 
     <Section title="開發者">
@@ -69,7 +70,7 @@ export const AboutPage = () => (
         <a className="font-medium text-[#374254] underline" href={APP_STORE_URL}>
           在 App Store 下載 reteP
         </a>
-        （iPhone，免費）。
+        （iPhone、iPad，免費）。
       </p>
     </Section>
   </main>
