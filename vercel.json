@@ -19,6 +19,10 @@
     {
       "source": "/sso-callback",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+    },
+    {
+      "source": "/google546d996a45483792.html",
+      "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
     }
   ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
