@@ -114,7 +114,7 @@ npm run dev
 | `VITE_API_BASE_URL`          | 後端 API：本機 `http://localhost:8000`，正式填 Zeabur 網址 | ✓                          |
 | `VITE_AI_WEBHOOK_URL`        | n8n 拍照辨識 webhook 的 URL                              | 選填                       |
 | `VITE_USE_MOCK`              | 設 `true` 全程用假資料，不打任何外部服務                 | 選填                       |
-| `VITE_GA_MEASUREMENT_ID`     | GA4 Measurement ID（`G-XXXXXXXXXX`）；留空則不載入 GA    | 選填                       |
+| `VITE_GA_MEASUREMENT_ID`     | 覆蓋內建的 GA4 Measurement ID；設空字串可在該環境關閉 GA | 選填                       |
 
 > `.env.local` 已被 `.gitignore` 排除，請勿 commit。
 
@@ -189,14 +189,16 @@ master ──► feature/*  ──/create-pr──►  develop  ──merge─�
 
 | 函式 | 用途 |
 | --- | --- |
-| `initGA()` | 動態注入 gtag script（`async`）。未設 `VITE_GA_MEASUREMENT_ID` 或非瀏覽器環境 → no-op，不報錯。 |
+| `initGA()` | 動態注入 gtag script（`async`）。無 Measurement ID 或非瀏覽器環境 → no-op，不報錯。 |
 | `trackPageView(pathAndQuery)` | 送一筆 `page_view`。**一律** `sanitizePath` 去掉 query string，`page_path` 永不含 `?…`（含 Clerk ticket）。 |
-| `trackEvent(name, params)` | 送自訂事件。未設 ID → no-op。 |
+| `trackEvent(name, params)` | 送自訂事件。無 ID → no-op。 |
+
+**Measurement ID 來源**（`gaId()`）：`VITE_GA_MEASUREMENT_ID` 環境變數優先；未設時，**正式 build** 用 `analytics.ts` 內的預設 `DEFAULT_GA_ID`；本機 `npm run dev` 一律不載入。把某環境的變數設成空字串即可在該環境關閉 GA（例如 Vercel Preview）。Measurement ID 非機密，寫在原始碼沒問題。
 
 - **SPA page_view**：`gtag('config', …, { send_page_view: false })` 關掉自動送；改由 `src/hooks/usePageViews.ts` 的 `trackRouterPageViews()` 監聽 `router.subscribe()`，每次導航 settle（`navigation.state === 'idle'`）送一筆。`usePageViews()` 掛在 `App`。
 - **隱私**：登入後路徑（`/home`、`/history`、`/settings`）也只送 pathname，不送 query、不送使用者參數。
 - **Consent**：專案目前無 cookie / consent 機制，`initGA()` 內有 `TODO(consent)` 註記接法（同意前 bail，或 `gtag('consent', 'default', …)`）。
-- 本機驗證：`.env.local` 設 `VITE_GA_MEASUREMENT_ID=G-XXXX` → DevTools Network 面板在路由切換時可見對 `google-analytics.com/g/collect` 的請求、`dp` 不含 `?`。不設變數則完全沒有 `googletagmanager` 請求。
+- 驗證：正式站或 `npm run build && npm run preview`，DevTools Network 面板在路由切換時可見對 `google-analytics.com/g/collect` 的請求、`dp` 不含 `?`；GA4「即時」報表也會出現流量。`npm run dev` 則完全沒有 `googletagmanager` 請求。
 
 ---
 

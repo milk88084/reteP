@@ -1,17 +1,25 @@
 /**
  * Google Analytics 4 — thin wrapper.
  *
- * The Measurement ID comes from VITE_GA_MEASUREMENT_ID. When it is unset every
- * function here is a no-op: no script is injected and nothing throws. This keeps
- * local dev and preview builds free of analytics unless explicitly configured.
+ * Measurement ID resolution:
+ *   1. VITE_GA_MEASUREMENT_ID env var (set one on Vercel to override, or set it
+ *      empty on a given environment to turn GA off there).
+ *   2. Otherwise, in production builds only, the default property below.
+ *   3. Otherwise (local dev) → undefined, and every function here is a no-op.
+ *
+ * A Measurement ID is not a secret — it ships in the client bundle of every
+ * GA-enabled site — so keeping the default in source is fine.
  *
  * SPA page views: gtag's automatic page_view is disabled (`send_page_view:false`)
  * and `trackPageView` is called from the router (see `usePageViews`).
  */
 
+const DEFAULT_GA_ID = 'G-6HN3WXEM9C'
+
 function gaId(): string | undefined {
-  const id = import.meta.env.VITE_GA_MEASUREMENT_ID
-  return id ? String(id) : undefined
+  const fromEnv = import.meta.env.VITE_GA_MEASUREMENT_ID
+  if (fromEnv !== undefined) return fromEnv ? String(fromEnv) : undefined
+  return import.meta.env.PROD ? DEFAULT_GA_ID : undefined
 }
 
 let initialised = false
